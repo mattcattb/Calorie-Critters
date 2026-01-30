@@ -1,0 +1,12 @@
+{
+  "folders": [
+    {
+      "path": "./",
+    },
+    {"path": "./packages/server"},
+    {
+      "path": "./packages/app",
+    },
+  ],
+  "settings": {},
+}

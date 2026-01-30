@@ -3,10 +3,12 @@
     {
       "path": "./",
     },
-    {"path": "./packages/server"},
+    {"path": "./apps/api"},
     {
-      "path": "./packages/app",
+      "path": "./apps/web",
     },
+
+    {"path": "./apps/mobile"},
   ],
   "settings": {},
 }

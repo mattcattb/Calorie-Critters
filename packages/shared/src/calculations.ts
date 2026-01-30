@@ -1,5 +1,6 @@
 import { NICOTINE_HALF_LIFE_HOURS } from "./constants";
-import type { BloodstreamStats, CostStats, TimestampLike } from "./types";
+import type { GoalType } from "./constants";
+import type { BloodstreamStats, CostStats, GoalProgress, TimestampLike } from "./types";
 
 const MS_PER_HOUR = 60 * 60 * 1000;
 const MS_PER_DAY = 24 * MS_PER_HOUR;
@@ -51,7 +52,7 @@ export const calculateBloodstreamStats = (
 };
 
 export const calculateCostStats = (
-  entries: Array<{ cost?: number; timestamp: TimestampLike }>,
+  entries: Array<{ cost?: number | null; timestamp: TimestampLike }>,
   options?: { now?: TimestampLike }
 ): CostStats => {
   const now = toDate(options?.now ?? new Date());
@@ -81,5 +82,74 @@ export const calculateCostStats = (
     dailySpending: Math.round(dailySpending * 100) / 100,
     weeklySpending: Math.round(weeklySpending * 100) / 100,
     monthlySpending: Math.round(monthlySpending * 100) / 100,
+  };
+};
+
+export type GoalLike = {
+  id: string;
+  goalType: GoalType;
+  targetValue?: number | null;
+  targetDate?: TimestampLike | null;
+  startDate: TimestampLike;
+};
+
+export const calculateGoalProgress = (
+  goal: GoalLike,
+  entries: Array<{ nicotineMg: number; timestamp: TimestampLike }>,
+  options?: { now?: TimestampLike }
+): GoalProgress => {
+  const now = toDate(options?.now ?? new Date());
+  const startDate = toDate(goal.startDate);
+  const targetDate = goal.targetDate ? toDate(goal.targetDate) : undefined;
+
+  const todayTotal = entries.reduce((sum, e) => sum + e.nicotineMg, 0);
+
+  let percentComplete = 0;
+  let onTrack = false;
+  let daysRemaining: number | undefined;
+
+  switch (goal.goalType) {
+    case "daily_limit":
+      if (goal.targetValue) {
+        percentComplete = Math.min(100, (todayTotal / goal.targetValue) * 100);
+        onTrack = todayTotal <= goal.targetValue;
+      }
+      break;
+    case "reduction":
+      if (targetDate) {
+        const totalDays = Math.ceil(
+          (targetDate.getTime() - startDate.getTime()) / MS_PER_DAY
+        );
+        const daysPassed = Math.ceil(
+          (now.getTime() - startDate.getTime()) / MS_PER_DAY
+        );
+        daysRemaining = Math.max(0, totalDays - daysPassed);
+        percentComplete = Math.min(100, (daysPassed / totalDays) * 100);
+        onTrack = now < targetDate;
+      }
+      break;
+    case "quit_date":
+      if (targetDate) {
+        const totalDays = Math.ceil(
+          (targetDate.getTime() - startDate.getTime()) / MS_PER_DAY
+        );
+        const daysPassed = Math.ceil(
+          (now.getTime() - startDate.getTime()) / MS_PER_DAY
+        );
+        daysRemaining = Math.max(0, totalDays - daysPassed);
+        percentComplete = Math.min(100, (daysPassed / totalDays) * 100);
+        onTrack = now < targetDate;
+      }
+      break;
+  }
+
+  return {
+    goalId: goal.id,
+    goalType: goal.goalType,
+    currentValue: Math.round(todayTotal * 100) / 100,
+    targetValue: goal.targetValue ?? undefined,
+    percentComplete: Math.round(percentComplete),
+    daysRemaining,
+    onTrack,
   };
 };

@@ -34,8 +34,8 @@ bun run dev:mobile
 ## Project Structure
 
 ```
-packages/
-├── server/           # Hono API server
+apps/
+├── api/              # Hono API server
 │   └── src/
 │       ├── auth/     # Authentication (Better Auth)
 │       ├── entries/  # Nicotine entry logging
@@ -44,11 +44,12 @@ packages/
 │       ├── billing/  # Stripe subscriptions
 │       ├── common/   # Logger, CORS, utilities
 │       └── db/       # Drizzle schema & client
-├── app/              # React frontend
+├── web/              # React frontend
 │   └── src/
 │       ├── routes/   # TanStack Router pages
 │       └── lib/      # API client, auth hooks
-├── mobile/           # Expo (React Native) app
+└── mobile/           # Expo (React Native) app
+packages/
 ├── api-client/       # Shared Hono RPC client
 └── shared/           # Shared types & constants
 ```

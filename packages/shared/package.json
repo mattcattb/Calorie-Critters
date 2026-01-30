@@ -10,7 +10,7 @@
   },
   "scripts": {
     "dev": "bun -e \"console.log('shared: no dev server')\"",
-    "build": "tsc -b"
+    "build": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
     "zod": "^3.24.0"

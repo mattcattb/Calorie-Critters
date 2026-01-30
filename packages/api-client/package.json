@@ -10,7 +10,7 @@
   },
   "scripts": {
     "dev": "bun -e \"console.log('api-client: no dev server')\"",
-    "build": "tsc -b"
+    "build": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
     "hono": "^4.6.0"

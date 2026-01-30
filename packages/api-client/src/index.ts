@@ -1,7 +1,5 @@
+import type { Hono } from "hono";
 import { hc } from "hono/client";
-import type { AppType } from "server/src/index";
-
-export type ApiClient = ReturnType<typeof createApiClient>;
 
 export type ApiClientOptions = {
   baseUrl?: string;
@@ -10,13 +8,15 @@ export type ApiClientOptions = {
   headers?: HeadersInit;
 };
 
-export const createApiClient = ({
+export const createApiClient = <
+  T extends Hono<any, any, any> = Hono<any, any, any>
+>({
   baseUrl = "",
   includeCredentials = true,
   getAuthToken,
   headers,
-}: ApiClientOptions = {}) =>
-  hc<AppType>(`${baseUrl}/api`, {
+}: ApiClientOptions = {}): ReturnType<typeof hc<T>> =>
+  hc<T>(`${baseUrl}/api`, {
     fetch: async (input: RequestInfo | URL, init?: RequestInit) => {
       const token = getAuthToken ? await getAuthToken() : null;
       const nextHeaders = new Headers(init?.headers ?? {});

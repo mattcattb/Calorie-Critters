@@ -1,5 +1,5 @@
 import { desc, eq, isNull } from "drizzle-orm";
-import type { CreateEntryInput } from "shared";
+import type { CreateEntryInput } from "@nicflow/shared";
 import { db } from "./client";
 import { nicotineEntry } from "./schema";
 

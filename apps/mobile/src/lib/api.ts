@@ -1,4 +1,4 @@
-import { createApiClient } from "api-client";
+import { createApiClient } from "@nicflow/api-client";
 
 const API_BASE_URL =
   (globalThis as { process?: { env?: Record<string, string | undefined> } })

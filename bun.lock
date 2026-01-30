@@ -6,16 +6,16 @@
       "name": "nicotine-tracker",
     },
     "apps/api": {
-      "name": "api",
+      "name": "@nicflow/api",
       "version": "0.0.1",
       "dependencies": {
         "@better-auth/stripe": "^1.0.0",
         "@hono/zod-validator": "^0.4.0",
+        "@nicflow/shared": "workspace:*",
         "better-auth": "^1.2.0",
         "drizzle-orm": "^0.38.0",
         "hono": "^4.6.0",
         "postgres": "^3.4.0",
-        "shared": "workspace:*",
         "stripe": "^20.0.0",
         "zod": "^3.24.0",
       },
@@ -25,11 +25,12 @@
       },
     },
     "apps/mobile": {
-      "name": "mobile",
+      "name": "@nicflow/mobile",
       "version": "0.0.1",
       "dependencies": {
+        "@nicflow/api-client": "workspace:*",
+        "@nicflow/shared": "workspace:*",
         "@tanstack/react-query": "^5.62.0",
-        "api-client": "workspace:*",
         "drizzle-orm": "^0.38.0",
         "expo": "^50.0.0",
         "expo-router": "^3.5.0",
@@ -38,7 +39,6 @@
         "react-native": "^0.73.0",
         "react-native-safe-area-context": "^4.8.2",
         "react-native-screens": "^3.30.1",
-        "shared": "workspace:*",
       },
       "devDependencies": {
         "@types/react": "^18.2.0",
@@ -47,18 +47,18 @@
       },
     },
     "apps/web": {
-      "name": "web",
+      "name": "@nicflow/web",
       "version": "0.0.1",
       "dependencies": {
         "@better-auth/stripe": "^1.0.0",
+        "@nicflow/api-client": "workspace:*",
+        "@nicflow/shared": "workspace:*",
         "@tanstack/react-query": "^5.62.0",
         "@tanstack/react-router": "^1.93.0",
-        "api-client": "workspace:*",
         "better-auth": "^1.2.0",
         "hono": "^4.6.0",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
-        "shared": "workspace:*",
       },
       "devDependencies": {
         "@tanstack/router-plugin": "^1.93.0",
@@ -74,7 +74,7 @@
       },
     },
     "packages/api-client": {
-      "name": "api-client",
+      "name": "@nicflow/api-client",
       "version": "0.0.1",
       "dependencies": {
         "hono": "^4.6.0",
@@ -84,7 +84,7 @@
       },
     },
     "packages/shared": {
-      "name": "shared",
+      "name": "@nicflow/shared",
       "version": "0.0.1",
       "dependencies": {
         "zod": "^3.24.0",
@@ -507,6 +507,16 @@
 
     "@jridgewell/trace-mapping": ["@jridgewell/trace-mapping@0.3.31", "", { "dependencies": { "@jridgewell/resolve-uri": "^3.1.0", "@jridgewell/sourcemap-codec": "^1.4.14" } }, "sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw=="],
 
+    "@nicflow/api": ["@nicflow/api@workspace:apps/api"],
+
+    "@nicflow/api-client": ["@nicflow/api-client@workspace:packages/api-client"],
+
+    "@nicflow/mobile": ["@nicflow/mobile@workspace:apps/mobile"],
+
+    "@nicflow/shared": ["@nicflow/shared@workspace:packages/shared"],
+
+    "@nicflow/web": ["@nicflow/web@workspace:apps/web"],
+
     "@noble/ciphers": ["@noble/ciphers@2.1.1", "", {}, "sha512-bysYuiVfhxNJuldNXlFEitTVdNnYUc+XNJZd7Qm2a5j1vZHgY+fazadNFWFaMK/2vye0JVlxV3gHmC0WDfAOQw=="],
 
     "@noble/hashes": ["@noble/hashes@2.0.1", "", {}, "sha512-XlOlEbQcE9fmuXxrVTXCTlG2nlRXa9Rj3rr5Ue/+tX+nmkgbX720YHh0VR3hBF9xDvwnb8D2shVGOwNx+ulArw=="],
@@ -776,10 +786,6 @@
     "any-promise": ["any-promise@1.3.0", "", {}, "sha512-7UvmKalWRt1wgjL1RrGxoSJW/0QZFIegpeGvZG9kjp8vrRu55XTHbwnqq2GpXm9uLbcuhxm3IqX9OB4MZR1b2A=="],
 
     "anymatch": ["anymatch@3.1.3", "", { "dependencies": { "normalize-path": "^3.0.0", "picomatch": "^2.0.4" } }, "sha512-KMReFUr0B4t+D+OBkjR3KYqvocp2XaSzO55UcB6mgQMd3KbcE+mWTyvVV7D/zsdEbNnV6acZUutkiHQXvTr1Rw=="],
-
-    "api": ["api@workspace:apps/api"],
-
-    "api-client": ["api-client@workspace:packages/api-client"],
 
     "appdirsjs": ["appdirsjs@1.2.7", "", {}, "sha512-Quji6+8kLBC3NnBeo14nPDq0+2jUs5s3/xEye+udFHumHhRk4M7aAMXp/PBJqkKYGuuyR9M/6Dq7d2AViiGmhw=="],
 
@@ -1553,8 +1559,6 @@
 
     "mkdirp": ["mkdirp@0.5.6", "", { "dependencies": { "minimist": "^1.2.6" }, "bin": { "mkdirp": "bin/cmd.js" } }, "sha512-FP+p8RB8OWpF3YZBCrP5gtADmtXApB5AMLn+vdyA+PyxCjrCs00mjyUozssO33cwDeT3wNGdLxJ5M//YqtHAJw=="],
 
-    "mobile": ["mobile@workspace:apps/mobile"],
-
     "mrmime": ["mrmime@1.0.1", "", {}, "sha512-hzzEagAgDyoU1Q6yg5uI+AorQgdvMCur3FcKf7NhMKWsaYg+RnbTyHRa/9IlLF9rf455MOCtcqqrQQ83pPP7Uw=="],
 
     "ms": ["ms@2.1.3", "", {}, "sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA=="],
@@ -1859,8 +1863,6 @@
 
     "shallowequal": ["shallowequal@1.1.0", "", {}, "sha512-y0m1JoUZSlPAjXVtPPW70aZWfIL/dSP7AFkRnniLCrK/8MDKog3TySTBmckD+RObVxH0v4Tox67+F14PdED2oQ=="],
 
-    "shared": ["shared@workspace:packages/shared"],
-
     "shebang-command": ["shebang-command@1.2.0", "", { "dependencies": { "shebang-regex": "^1.0.0" } }, "sha512-EV3L1+UQWGor21OmnvojK36mhg+TyIKDh3iFBKBohr5xeXIhNBcx8oWdgkTEEQ+BEFFYdLRuqMfd5L84N1V5Vg=="],
 
     "shebang-regex": ["shebang-regex@1.0.0", "", {}, "sha512-wpoSFAxys6b2a2wHZ1XpDSgD7N9iVjg29Ph9uV/uaP9Ex/KXlkTZTeddxDPSYQpgvzKLGJke2UU0AzoGCjNIvQ=="],
@@ -2076,8 +2078,6 @@
     "warn-once": ["warn-once@0.1.1", "", {}, "sha512-VkQZJbO8zVImzYFteBXvBOZEl1qL175WH8VmZcxF2fZAoudNhNDvHi+doCaAEdU2l2vtcIwa2zn0QK5+I1HQ3Q=="],
 
     "wcwidth": ["wcwidth@1.0.1", "", { "dependencies": { "defaults": "^1.0.3" } }, "sha512-XHPEwS0q6TaxcvG85+8EYkbiCux2XtWG2mkc47Ng2A77BQu9+DqIOJldST4HgPkuea7dvKSj5VgX3P1d4rW8Tg=="],
-
-    "web": ["web@workspace:apps/web"],
 
     "web-encoding": ["web-encoding@1.1.5", "", { "dependencies": { "util": "^0.12.3" }, "optionalDependencies": { "@zxing/text-encoding": "0.9.0" } }, "sha512-HYLeVCdJ0+lBYV2FvNZmv3HJ2Nt0QYXqZojk3d9FJOLkwnuhzM9tmamh8d7HPM8QqjKH8DeHkFTx+CFlWpZZDA=="],
 

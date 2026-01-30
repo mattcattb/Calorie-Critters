@@ -1,5 +1,5 @@
 import { eq, desc, and, gte } from "drizzle-orm";
-import { calculateBloodstreamStats, calculateCostStats } from "shared";
+import { calculateBloodstreamStats, calculateCostStats } from "@nicflow/shared";
 import { db } from "../db";
 import { nicotineEntry, product } from "../db/schema";
 import type { CreateEntryInput } from "./entries.schema";

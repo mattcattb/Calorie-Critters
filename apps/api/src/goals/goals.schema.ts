@@ -1,5 +1,5 @@
 import {z} from "zod";
-import { GOAL_TYPES, GOAL_STATUSES } from "shared";
+import { GOAL_TYPES, GOAL_STATUSES } from "@nicflow/shared";
 
 export const createGoalSchema = z.object({
   goalType: z.enum(GOAL_TYPES),

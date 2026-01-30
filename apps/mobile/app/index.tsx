@@ -1,6 +1,10 @@
 import { useMemo, useState } from "react";
 import { SafeAreaView, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import { DEFAULT_NICOTINE_MG, NICOTINE_TYPES, type NicotineType } from "shared";
+import {
+  DEFAULT_NICOTINE_MG,
+  NICOTINE_TYPES,
+  type NicotineType,
+} from "@nicflow/shared";
 import { useEntries, useQuickLog } from "../src/db/entries";
 
 const typeLabels: Record<NicotineType, string> = {

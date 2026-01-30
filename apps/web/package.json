@@ -1,5 +1,5 @@
 {
-  "name": "web",
+  "name": "@nicflow/web",
   "version": "0.0.1",
   "private": true,
   "type": "module",
@@ -10,14 +10,14 @@
   },
   "dependencies": {
     "@better-auth/stripe": "^1.0.0",
-    "api-client": "workspace:*",
+    "@nicflow/api-client": "workspace:*",
     "@tanstack/react-query": "^5.62.0",
     "@tanstack/react-router": "^1.93.0",
     "better-auth": "^1.2.0",
     "hono": "^4.6.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "shared": "workspace:*"
+    "@nicflow/shared": "workspace:*"
   },
   "devDependencies": {
     "@tanstack/router-plugin": "^1.93.0",

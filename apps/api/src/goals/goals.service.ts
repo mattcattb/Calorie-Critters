@@ -1,5 +1,5 @@
 import { eq, and, gte, desc } from "drizzle-orm";
-import { calculateGoalProgress } from "shared";
+import { calculateGoalProgress } from "@nicflow/shared";
 import { db } from "../db";
 import { goal, nicotineEntry } from "../db/schema";
 import type { CreateGoalInput, UpdateGoalInput } from "./goals.schema";

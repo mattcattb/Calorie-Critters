@@ -1,4 +1,4 @@
-# Nicotine Tracker
+# Dose
 
 Track your nicotine intake, visualize costs, and work toward quitting goals.
 

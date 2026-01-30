@@ -1,5 +1,5 @@
 {
-  "name": "nicotine-tracker",
+  "name": "dose",
   "private": true,
   "workspaces": ["apps/*", "packages/*"],
   "scripts": {

@@ -3,4 +3,4 @@ export {
   updateEntrySchema,
   type CreateEntryInput,
   type UpdateEntryInput,
-} from "shared";
+} from "@nicflow/shared";

@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { NicotineType } from "shared";
+import type { NicotineType } from "@nicflow/shared";
 import { listEntries, insertEntry } from "./entries.repo";
 import { syncUnsyncedEntries } from "../sync/entries";
 

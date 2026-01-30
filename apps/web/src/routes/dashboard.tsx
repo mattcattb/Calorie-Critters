@@ -7,7 +7,7 @@ import {
   DEFAULT_NICOTINE_MG,
   NICOTINE_TYPES,
   type NicotineType,
-} from "shared";
+} from "@nicflow/shared";
 
 export const Route = createFileRoute("/dashboard")({
   component: DashboardPage,

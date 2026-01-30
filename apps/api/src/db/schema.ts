@@ -8,7 +8,7 @@ import {
   real,
   uuid,
 } from "drizzle-orm/pg-core";
-import { GOAL_STATUSES, GOAL_TYPES, NICOTINE_TYPES } from "shared";
+import { GOAL_STATUSES, GOAL_TYPES, NICOTINE_TYPES } from "@nicflow/shared";
 
 export const nicotineTypeEnum = pgEnum("nicotine_type", NICOTINE_TYPES);
 export const goalTypeEnum = pgEnum("goal_type", GOAL_TYPES);

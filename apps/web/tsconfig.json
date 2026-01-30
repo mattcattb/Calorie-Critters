@@ -13,6 +13,8 @@
     "composite": false,
     "declaration": false,
     "declarationMap": false,
+    "incremental": false,
+    "tsBuildInfoFile": "./node_modules/.cache/tsconfig.tsbuildinfo",
     "jsx": "react-jsx",
     "strict": true,
     "noUnusedLocals": true,
@@ -21,7 +23,7 @@
     "noUncheckedSideEffectImports": true,
     "types": ["vite/client", "node"],
     "paths": {
-      "api/*": ["../api/*"]
+      "@nicflow/api/*": ["../api/*"]
     }
   },
   "include": ["src", "vite.config.ts"]

@@ -1,5 +1,5 @@
-import { createApiClient } from "api-client";
-import type { AppType } from "api/src/index";
+import { createApiClient } from "@nicflow/api-client";
+import type { AppType } from "@nicflow/api/src/index";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "";
 

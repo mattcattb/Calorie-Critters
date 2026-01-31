@@ -1,5 +1,5 @@
-import { Hono } from "hono";
-import { auth } from "./auth.config";
+import {createRouter} from "../common/hono";
+import {auth} from "../lib/auth";
 
 /**
  * Auth controller that handles all Better Auth routes.
@@ -14,10 +14,9 @@ import { auth } from "./auth.config";
  * - POST /api/auth/reset-password
  * - And more depending on enabled features
  */
-export const authController = new Hono()
-  .all("/*", (c) => {
-    return auth.handler(c.req.raw);
-  });
+export const authController = createRouter().all("/*", (c) => {
+  return auth.handler(c.req.raw);
+});
 
 // Re-export auth for use in other modules
-export { auth };
+export {auth};

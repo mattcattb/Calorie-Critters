@@ -1,21 +1,23 @@
-import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { productsService } from "./products.service";
 import { createProductSchema, updateProductSchema } from "./products.schema";
+import { createRouter } from "../common/hono";
 
-export const productsController = new Hono()
+export const productsController = createRouter()
   .get("/", async (c) => {
     const userId = c.get("userId");
     const products = await productsService.getAll(userId);
     return c.json(products);
   })
+  .get("/last-used", async (c) => {
+    const userId = c.get("userId");
+    const product = await productsService.getLastUsed(userId);
+    return c.json(product);
+  })
   .get("/:id", async (c) => {
     const userId = c.get("userId");
     const id = c.req.param("id");
     const prod = await productsService.getById(userId, id);
-    if (!prod) {
-      return c.json({ error: "Product not found" }, 404);
-    }
     return c.json(prod);
   })
   .post("/", zValidator("json", createProductSchema), async (c) => {
@@ -29,9 +31,6 @@ export const productsController = new Hono()
     const id = c.req.param("id");
     const body = c.req.valid("json");
     const prod = await productsService.update(userId, id, body);
-    if (!prod) {
-      return c.json({ error: "Product not found" }, 404);
-    }
     return c.json(prod);
   })
   .delete("/:id", async (c) => {

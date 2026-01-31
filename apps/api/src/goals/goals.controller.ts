@@ -1,9 +1,9 @@
-import { Hono } from "hono";
-import { zValidator } from "@hono/zod-validator";
-import { goalsService } from "./goals.service";
-import { createGoalSchema, updateGoalSchema } from "./goals.schema";
+import {zValidator} from "@hono/zod-validator";
+import {goalsService} from "./goals.service";
+import {createGoalSchema, updateGoalSchema} from "@nicflow/shared";
+import {createRouter} from "../common/hono";
 
-export const goalsController = new Hono()
+export const goalsController = createRouter()
   .get("/", async (c) => {
     const userId = c.get("userId");
     const goals = await goalsService.getAll(userId);
@@ -18,18 +18,12 @@ export const goalsController = new Hono()
     const userId = c.get("userId");
     const id = c.req.param("id");
     const g = await goalsService.getById(userId, id);
-    if (!g) {
-      return c.json({ error: "Goal not found" }, 404);
-    }
     return c.json(g);
   })
   .get("/:id/progress", async (c) => {
     const userId = c.get("userId");
     const id = c.req.param("id");
     const progress = await goalsService.getProgress(userId, id);
-    if (!progress) {
-      return c.json({ error: "Goal not found" }, 404);
-    }
     return c.json(progress);
   })
   .post("/", zValidator("json", createGoalSchema), async (c) => {
@@ -43,14 +37,11 @@ export const goalsController = new Hono()
     const id = c.req.param("id");
     const body = c.req.valid("json");
     const g = await goalsService.update(userId, id, body);
-    if (!g) {
-      return c.json({ error: "Goal not found" }, 404);
-    }
     return c.json(g);
   })
   .delete("/:id", async (c) => {
     const userId = c.get("userId");
     const id = c.req.param("id");
     await goalsService.delete(userId, id);
-    return c.json({ success: true });
+    return c.json({success: true});
   });

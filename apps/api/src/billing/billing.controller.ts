@@ -1,34 +1,39 @@
-import { Hono } from "hono";
-import { zValidator } from "@hono/zod-validator";
-import { stripe } from "../lib/stripe";
-import { billingService } from "./billing.service";
-import { createCheckoutSchema } from "./billing.schema";
+import {zValidator} from "@hono/zod-validator";
+import {appEnv} from "../common/env";
+import {stripe} from "../lib/stripe";
+import {billingService} from "./billing.service";
+import { BadRequestException } from "../common/errors";
+import z from "zod";
+import {createRouter} from "../common/hono";
 
-export const billingController = new Hono()
-  .post("/create-checkout-session", zValidator("json", createCheckoutSchema), async (c) => {
-    const userId = c.get("userId");
-    const { priceId } = c.req.valid("json");
+export const createCheckoutSchema = z.object({
+  priceId: z.string().optional(),
+});
 
-    try {
-      const result = await billingService.createCheckoutSession(userId, priceId);
+export const billingController = createRouter()
+  .post(
+    "/create-checkout-session",
+    zValidator("json", createCheckoutSchema),
+    async (c) => {
+      const userId = c.get("userId");
+      const {priceId} = c.req.valid("json");
+
+      const result = await billingService.createCheckoutSession(
+        userId,
+        priceId,
+      );
       return c.json(result);
-    } catch {
-      return c.json({ error: "Failed to create checkout session" }, 500);
-    }
-  })
+    },
+  )
   .post("/create-portal-session", async (c) => {
     const userId = c.get("userId");
 
-    try {
-      const result = await billingService.createPortalSession(userId);
-      return c.json(result);
-    } catch {
-      return c.json({ error: "No subscription found" }, 400);
-    }
+    const result = await billingService.createPortalSession(userId);
+    return c.json(result);
   });
 
 // Webhook handler (mounted separately without auth)
-export const billingWebhook = new Hono().post("/", async (c) => {
+export const billingWebhook = createRouter().post("/", async (c) => {
   const sig = c.req.header("stripe-signature");
   const body = await c.req.text();
 
@@ -37,12 +42,12 @@ export const billingWebhook = new Hono().post("/", async (c) => {
     event = stripe.webhooks.constructEvent(
       body,
       sig!,
-      process.env.STRIPE_WEBHOOK_SECRET!
+      appEnv.STRIPE_WEBHOOK_SECRET,
     );
   } catch {
-    return c.json({ error: "Webhook signature verification failed" }, 400);
+    throw new BadRequestException("Webhook signature verification failed");
   }
 
   await billingService.handleWebhook(event);
-  return c.json({ received: true });
+  return c.json({received: true});
 });

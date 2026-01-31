@@ -1,9 +1,9 @@
-import { Hono } from "hono";
-import { zValidator } from "@hono/zod-validator";
-import { entriesService } from "./entries.service";
-import { createEntrySchema } from "./entries.schema";
+import {zValidator} from "@hono/zod-validator";
+import {entriesService} from "./entries.service";
+import {createEntrySchema, updateEntrySchema} from "./entries.schema";
+import {createRouter} from "../common/hono";
 
-export const entriesController = new Hono()
+export const entriesController = createRouter()
   .get("/", async (c) => {
     const userId = c.get("userId");
     const entries = await entriesService.getAll(userId);
@@ -15,11 +15,18 @@ export const entriesController = new Hono()
     const entry = await entriesService.create(userId, body);
     return c.json(entry, 201);
   })
+  .put("/:id", zValidator("json", updateEntrySchema), async (c) => {
+    const userId = c.get("userId");
+    const id = c.req.param("id");
+    const body = c.req.valid("json");
+    const entry = await entriesService.update(userId, id, body);
+    return c.json(entry);
+  })
   .delete("/:id", async (c) => {
     const userId = c.get("userId");
     const id = c.req.param("id");
     await entriesService.delete(userId, id);
-    return c.json({ success: true });
+    return c.json({success: true});
   })
   .get("/stats", async (c) => {
     const userId = c.get("userId");

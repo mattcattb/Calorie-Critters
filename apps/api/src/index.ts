@@ -1,34 +1,25 @@
-import {Hono} from "hono";
-import {logger as honoLogger} from "hono/logger";
-
-// Common
-import {corsMiddleware} from "./common/cors";
+import {appEnv} from "./common/env";
 import {logger} from "./common/logger";
+import {addErrorHandling} from "./common/errors";
+import {addGlobalMiddlewares, createRouter} from "./common/hono";
 
-// Auth
 import {authController} from "./auth/auth.controller";
 import {authMiddleware} from "./auth/auth.middleware";
 
-// Feature controllers
 import {entriesController} from "./entries/entries.controller";
 import {productsController} from "./products/products.controller";
 import {goalsController} from "./goals/goals.controller";
 import {billingController, billingWebhook} from "./billing/billing.controller";
 
-const app = new Hono();
-
-app.use("*", honoLogger());
-app.use("*", corsMiddleware);
-
-app.get("/health", (c) =>
-  c.json({status: "ok", timestamp: new Date().toISOString()}),
-);
+const app = createRouter();
+addGlobalMiddlewares(app);
+addErrorHandling(app);
 
 app.route("/api/auth", authController);
 
 app.route("/api/webhooks/stripe", billingWebhook);
 
-const api = new Hono()
+const api = createRouter()
   .use("*", authMiddleware)
   .route("/entries", entriesController)
   .route("/products", productsController)
@@ -39,7 +30,7 @@ app.route("/api", api);
 
 export type AppType = typeof api;
 
-const port = process.env.PORT || 3000;
+const port = appEnv.PORT;
 logger.info(`Server running on http://localhost:${port}`);
 
 export default {

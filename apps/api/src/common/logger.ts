@@ -1,46 +1,44 @@
-type LogLevel = "debug" | "info" | "warn" | "error";
+import {pinoLogger} from "hono-pino";
+import pino from "pino";
+import {appEnv} from "./env";
 
-const LOG_LEVELS: Record<LogLevel, number> = {
-  debug: 0,
-  info: 1,
-  warn: 2,
-  error: 3,
-};
+const transport =
+  appEnv.NODE_ENV !== "production"
+    ? {
+        target: "pino-pretty",
+        options: {
+          colorize: true,
+          translateTime: "SYS:standard",
+          ignore: "pid,hostname",
+        },
+      }
+    : undefined;
 
-const currentLevel = (process.env.LOG_LEVEL as LogLevel) || "info";
+const pinoInstance = pino({
+  formatters: {
+    level(label) {
+      return {level: label};
+    },
+  },
+  base: {
+    app: process.env.APP_NAME,
+  },
+  level: appEnv.LOG_LEVEL || (appEnv.NODE_ENV === "test" ? "error" : "info"),
+  serializers: {
+    err: pino.stdSerializers.err,
+    error: pino.stdSerializers.err,
+  },
+  transport,
+});
 
-function shouldLog(level: LogLevel): boolean {
-  return LOG_LEVELS[level] >= LOG_LEVELS[currentLevel];
+export function getPinoLogger() {
+  return pinoLogger({
+    pino: pinoInstance,
+  });
 }
 
-function formatMessage(level: LogLevel, message: string, meta?: object): string {
-  const timestamp = new Date().toISOString();
-  const metaStr = meta ? ` ${JSON.stringify(meta)}` : "";
-  return `[${timestamp}] ${level.toUpperCase()}: ${message}${metaStr}`;
+export const logger = pinoInstance;
+
+export function createChildLogger(bindings: pino.Bindings) {
+  return logger.child(bindings);
 }
-
-export const logger = {
-  debug(message: string, meta?: object) {
-    if (shouldLog("debug")) {
-      console.debug(formatMessage("debug", message, meta));
-    }
-  },
-
-  info(message: string, meta?: object) {
-    if (shouldLog("info")) {
-      console.info(formatMessage("info", message, meta));
-    }
-  },
-
-  warn(message: string, meta?: object) {
-    if (shouldLog("warn")) {
-      console.warn(formatMessage("warn", message, meta));
-    }
-  },
-
-  error(message: string, meta?: object) {
-    if (shouldLog("error")) {
-      console.error(formatMessage("error", message, meta));
-    }
-  },
-};

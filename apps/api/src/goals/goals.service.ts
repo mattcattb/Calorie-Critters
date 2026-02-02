@@ -1,8 +1,13 @@
-import { eq, and, gte, desc } from "drizzle-orm";
-import { calculateGoalProgress } from "@nicflow/shared";
-import { db } from "../db";
-import { goal, nicotineEntry } from "../db/schema";
-import type { CreateGoalInput, UpdateGoalInput } from "./goals.schema";
+import {eq, and, gte, desc} from "drizzle-orm";
+import {
+  calculateGoalProgress,
+  createGoalSchema,
+  updateGoalSchema,
+} from "@nicflow/shared";
+import {NotFoundException} from "../common/errors";
+import {db} from "../db";
+import {goal, nicotineEntry} from "../db/schema";
+import z from "zod";
 
 export const goalsService = {
   async getAll(userId: string) {
@@ -26,10 +31,13 @@ export const goalsService = {
       .select()
       .from(goal)
       .where(and(eq(goal.id, id), eq(goal.userId, userId)));
+    if (!g) {
+      throw new NotFoundException("Goal not found");
+    }
     return g;
   },
 
-  async create(userId: string, input: CreateGoalInput) {
+  async create(userId: string, input: z.infer<typeof createGoalSchema>) {
     const [g] = await db
       .insert(goal)
       .values({
@@ -44,7 +52,11 @@ export const goalsService = {
     return g;
   },
 
-  async update(userId: string, id: string, input: UpdateGoalInput) {
+  async update(
+    userId: string,
+    id: string,
+    input: z.infer<typeof updateGoalSchema>,
+  ) {
     const updateData: Record<string, unknown> = {
       updatedAt: new Date(),
     };
@@ -65,16 +77,24 @@ export const goalsService = {
       .where(and(eq(goal.id, id), eq(goal.userId, userId)))
       .returning();
 
+    if (!g) {
+      throw new NotFoundException("Goal not found");
+    }
     return g;
   },
 
   async delete(userId: string, id: string) {
-    await db.delete(goal).where(and(eq(goal.id, id), eq(goal.userId, userId)));
+    const deleted = await db
+      .delete(goal)
+      .where(and(eq(goal.id, id), eq(goal.userId, userId)))
+      .returning({id: goal.id});
+    if (deleted.length === 0) {
+      throw new NotFoundException("Goal not found");
+    }
   },
 
   async getProgress(userId: string, goalId: string) {
     const g = await this.getById(userId, goalId);
-    if (!g) return null;
 
     const now = new Date();
     const dayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
@@ -84,7 +104,10 @@ export const goalsService = {
       .select()
       .from(nicotineEntry)
       .where(
-        and(eq(nicotineEntry.userId, userId), gte(nicotineEntry.timestamp, dayAgo))
+        and(
+          eq(nicotineEntry.userId, userId),
+          gte(nicotineEntry.timestamp, dayAgo),
+        ),
       );
 
     return calculateGoalProgress(
@@ -96,7 +119,7 @@ export const goalsService = {
         startDate: g.startDate,
       },
       entries,
-      { now }
+      {now},
     );
   },
 };

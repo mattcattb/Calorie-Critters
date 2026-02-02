@@ -10,14 +10,16 @@ RUN apt-get update && \
   curl \
   && rm -rf /var/lib/apt/lists/*
 
-# Install Stripe CLI
 RUN VERSION=$(curl -s https://api.github.com/repos/stripe/stripe-cli/releases/latest | grep -Po '"tag_name": "v\K[0-9.]+') && \
-    curl -L "https://github.com/stripe/stripe-cli/releases/download/v${VERSION}/stripe_${VERSION}_linux_arm64.tar.gz" -o stripe.tar.gz && \
-    tar -xvf stripe.tar.gz && \
-    mv stripe /usr/local/bin/ && \
-    rm stripe.tar.gz
+  curl -L "https://github.com/stripe/stripe-cli/releases/download/v${VERSION}/stripe_${VERSION}_linux_arm64.tar.gz" -o stripe.tar.gz && \
+  tar -xvf stripe.tar.gz && \
+  mv stripe /usr/local/bin/ && \
+  rm stripe.tar.gz
 
 RUN npm i -g @openai/codex
 
 COPY --from=bun /usr/local/bin/bun /usr/local/bin/bun
 RUN ln -s /usr/local/bin/bun /usr/local/bin/bunx
+
+RUN mkdir -p /home/node/.codex && \
+  chown -R node:node /home/node/.codex /usr/local/lib/node_modules /usr/local/bin

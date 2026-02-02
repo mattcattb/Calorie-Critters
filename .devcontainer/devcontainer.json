@@ -10,7 +10,8 @@
         "oven.bun-vscode",
         "esbenp.prettier-vscode",
         "bradlc.vscode-tailwindcss",
-        "cweijan.vscode-database-client2"
+        "cweijan.vscode-database-client2",
+        "mefengl.copy-folder-content"
       ]
     }
   },

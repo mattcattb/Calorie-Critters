@@ -2,6 +2,17 @@
 
 Track your nicotine intake, visualize costs, and work toward quitting goals.
 
+## About
+
+Dose is a cross-platform nicotine tracker (web + mobile) with a privacy-first focus.
+Log usage, see real-time nicotine levels, track spending, and set quitting goals.
+
+## Project Status (January 31, 2026)
+
+- Core API is live with auth, entries, products, goals, and Stripe billing.
+- Web + mobile clients are in progress.
+- Roadmap includes notifications, goal recommendations, and deeper insights.
+
 ## Tech Stack
 
 - **Monorepo**: Bun workspaces
@@ -30,6 +41,9 @@ bun run dev
 # Start Expo mobile app (optional)
 bun run dev:mobile
 ```
+
+### Mobile SQLite config
+- `EXPO_PUBLIC_SQLITE_NAME` (default: `dose.dev.db`)
 
 ## Project Structure
 
@@ -117,12 +131,14 @@ packages/
 ### Entries
 - `GET /api/entries` - List entries
 - `POST /api/entries` - Create entry
+- `PUT /api/entries/:id` - Update entry
 - `DELETE /api/entries/:id` - Delete entry
 - `GET /api/entries/stats` - Bloodstream stats (24h)
 - `GET /api/entries/cost-stats` - Spending stats
 
 ### Products
 - `GET /api/products` - List saved products
+- `GET /api/products/last-used` - Get last used product
 - `POST /api/products` - Create product
 - `PUT /api/products/:id` - Update product
 - `DELETE /api/products/:id` - Delete product
@@ -138,3 +154,51 @@ packages/
 ### Billing
 - `POST /api/billing/create-checkout-session` - Start subscription
 - `POST /api/billing/create-portal-session` - Manage subscription
+
+---
+
+## API Overview
+
+Hono-based API with Better Auth, Stripe billing, and core nicotine tracking features.
+
+## Current API Features
+
+- Auth and sessions via Better Auth (email/password enabled, Google OAuth wired via env).
+- User/session/account tables managed through Better Auth + Drizzle.
+- Stripe subscriptions (checkout, portal, webhook updates subscription status).
+- Nicotine entries CRUD with stats endpoints:
+  - `/api/entries` (list, create, delete)
+  - `/api/entries/stats` (24h bloodstream stats)
+  - `/api/entries/cost-stats` (daily/weekly/monthly cost)
+- Products (user presets) CRUD:
+  - `/api/products` (list, create)
+  - `/api/products/:id` (read, update, delete)
+- Goals CRUD + progress:
+  - `/api/goals` (list, create)
+  - `/api/goals/active`
+  - `/api/goals/:id` (read, update, delete)
+  - `/api/goals/:id/progress` (daily progress calculation)
+- Shared domain logic in `packages/shared`:
+  - Zod schemas for entries/products/goals
+  - Calculations: bloodstream stats, cost stats, goal progress
+  - Constants for nicotine types, goal types/status
+
+## Shared Package Notes (`packages/shared`)
+
+- `constants.ts`: nicotine product types, goal types/status, half-life values.
+- `schemas.ts`: create/update schemas for entries, products, goals.
+- `calculations.ts`: nicotine decay, cost stats, goal progress calculations.
+- `types.ts`: API and domain model types.
+
+## Low-Lift Feature Ideas
+
+- Goal templates + recommended goals (prebuilt daily limits, taper plans).
+- Notifications/reminders (daily check-in, goal progress, streak warnings).
+- Streaks and milestones (days under limit, consecutive goal adherence).
+- Insight summaries (week-over-week change, savings trends, peak usage times).
+- Entry editing (PATCH/PUT for entries) and bulk import/export.
+- Product-level analytics (most used products, cost by product).
+- Smart defaults (auto-suggest nicotineMg/cost based on product type history).
+- Goal automation (auto-complete when target met, auto-abandon after expiry).
+- Safety guardrails (max daily nicotine warnings, rapid increase detection).
+- Webhooks/event log for client sync (new entry, goal status change).

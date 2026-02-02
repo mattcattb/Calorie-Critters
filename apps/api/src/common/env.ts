@@ -33,6 +33,8 @@ const appEnvSchema = z.object({
   CORS_ORIGINS: z.string().optional(),
   REDIS_URL: z.string().optional(),
 
+  NODE_ENV: z.string().optional(),
+
   PORT: z.preprocess((value) => {
     if (typeof value === "string" && value.trim() !== "") {
       return Number(value);

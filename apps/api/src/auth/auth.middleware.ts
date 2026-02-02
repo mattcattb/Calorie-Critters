@@ -1,22 +1,7 @@
-import { createMiddleware } from "hono/factory";
-import { auth } from "./auth.config";
+import {createMiddleware} from "hono/factory";
+import {auth} from "../lib/auth";
 
 // Extend Hono's context with typed user/session data
-declare module "hono" {
-  interface ContextVariableMap {
-    userId: string;
-    user: {
-      id: string;
-      email: string;
-      name: string;
-      image?: string | null;
-    };
-    session: {
-      id: string;
-      expiresAt: Date;
-    };
-  }
-}
 
 /**
  * Middleware that requires authentication.
@@ -29,7 +14,7 @@ export const authMiddleware = createMiddleware(async (c, next) => {
   });
 
   if (!session) {
-    return c.json({ error: "Unauthorized" }, 401);
+    return c.json({error: "Unauthorized"}, 401);
   }
 
   c.set("userId", session.user.id);

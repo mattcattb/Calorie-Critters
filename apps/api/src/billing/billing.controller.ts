@@ -2,7 +2,7 @@ import {zValidator} from "@hono/zod-validator";
 import {appEnv} from "../common/env";
 import {stripe} from "../lib/stripe";
 import {billingService} from "./billing.service";
-import { BadRequestException } from "../common/errors";
+import {BadRequestException} from "../common/errors";
 import z from "zod";
 import {createRouter} from "../common/hono";
 

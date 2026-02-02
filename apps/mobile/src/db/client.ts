@@ -1,7 +1,13 @@
 import * as SQLite from "expo-sqlite";
 import { drizzle } from "drizzle-orm/expo-sqlite";
 
-export const sqlite = SQLite.openDatabaseSync("nicotine.db");
+const getEnv = (key: string) =>
+  (globalThis as { process?: { env?: Record<string, string | undefined> } })
+    .process?.env?.[key];
+
+const SQLITE_NAME = getEnv("EXPO_PUBLIC_SQLITE_NAME") ?? "dose.dev.db";
+
+export const sqlite = SQLite.openDatabaseSync(SQLITE_NAME);
 export const db = drizzle(sqlite);
 
 export const initDb = async () => {

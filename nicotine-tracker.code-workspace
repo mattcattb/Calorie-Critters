@@ -9,6 +9,7 @@
     },
 
     {"path": "./apps/mobile"},
+    {"path": "./packages/shared"},
   ],
   "settings": {},
 }

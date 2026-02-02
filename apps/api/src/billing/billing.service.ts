@@ -1,5 +1,7 @@
 import Stripe from "stripe";
 import { stripe, PLANS } from "../lib/stripe";
+import { BadRequestException, ServiceException } from "../common/errors";
+import { appEnv } from "../common/env";
 import { db } from "../db";
 import { user } from "../db/schema";
 import { eq } from "drizzle-orm";
@@ -23,6 +25,10 @@ export const billingService = {
         .where(eq(user.id, userId));
     }
 
+    if (!PLANS.pro.priceId && !priceId) {
+      throw new ServiceException("Missing Stripe price configuration");
+    }
+
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       mode: "subscription",
@@ -33,8 +39,8 @@ export const billingService = {
           quantity: 1,
         },
       ],
-      success_url: `${process.env.BETTER_AUTH_URL}/dashboard?success=true`,
-      cancel_url: `${process.env.BETTER_AUTH_URL}/pricing?canceled=true`,
+      success_url: `${appEnv.BETTER_AUTH_URL}/dashboard?success=true`,
+      cancel_url: `${appEnv.BETTER_AUTH_URL}/pricing?canceled=true`,
     });
 
     return { url: session.url };
@@ -44,12 +50,12 @@ export const billingService = {
     const [currentUser] = await db.select().from(user).where(eq(user.id, userId));
 
     if (!currentUser.stripeCustomerId) {
-      throw new Error("No subscription found");
+      throw new BadRequestException("No subscription found");
     }
 
     const session = await stripe.billingPortal.sessions.create({
       customer: currentUser.stripeCustomerId,
-      return_url: `${process.env.BETTER_AUTH_URL}/dashboard`,
+      return_url: `${appEnv.BETTER_AUTH_URL}/dashboard`,
     });
 
     return { url: session.url };

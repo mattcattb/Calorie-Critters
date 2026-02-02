@@ -1,7 +1,79 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@import "./styles/variants/buttons.css";
+@import "./styles/variants/forms.css";
 
-body {
-  @apply bg-gray-50 text-gray-900;
+@theme {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-surface: hsl(var(--surface));
+  --color-surface-elevated: hsl(var(--surface-elevated));
+  --color-border: hsl(var(--border));
+  --color-ring: hsl(var(--ring));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-success: hsl(var(--success));
+  --color-warning: hsl(var(--warning));
+  --color-danger: hsl(var(--danger));
+
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+
+  --shadow-glow: 0 0 0 1px hsl(var(--ring) / 0.3),
+    0 10px 30px hsl(var(--ring) / 0.25);
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+    --background: 252 18% 7%;
+    --foreground: 250 20% 93%;
+    --muted: 250 18% 16%;
+    --muted-foreground: 248 12% 70%;
+    --surface: 252 22% 12%;
+    --surface-elevated: 252 22% 18%;
+    --border: 254 18% 28%;
+    --ring: 268 78% 62%;
+    --primary: 268 78% 62%;
+    --primary-foreground: 252 20% 96%;
+    --accent: 282 70% 60%;
+    --success: 154 60% 45%;
+    --warning: 36 86% 60%;
+    --danger: 0 75% 58%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+    background-image:
+      radial-gradient(
+        1200px 700px at 20% -10%,
+        hsl(268 78% 60% / 0.18),
+        transparent 60%
+      ),
+      radial-gradient(
+        1000px 500px at 90% 10%,
+        hsl(282 70% 60% / 0.16),
+        transparent 55%
+      ),
+      linear-gradient(180deg, hsl(252 20% 10% / 0.95), hsl(252 24% 6% / 0.95));
+    min-height: 100vh;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display;
+  }
+
+  ::selection {
+    background: hsl(var(--primary) / 0.4);
+    color: hsl(var(--primary-foreground));
+  }
 }

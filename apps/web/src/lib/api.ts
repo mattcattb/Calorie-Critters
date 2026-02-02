@@ -1,7 +1,10 @@
-import { createApiClient } from "@nicflow/api-client";
-import type { AppType } from "@nicflow/api/src/index";
+import {createApiClient} from "@nicflow/api-client";
+import type {AppType} from "@nicflow/api/src/index";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "";
+const rawBaseUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
+const API_BASE_URL = rawBaseUrl.startsWith("http")
+  ? rawBaseUrl
+  : `http://${rawBaseUrl}`;
 
 /**
  * Type-safe API client using Hono RPC.
@@ -13,6 +16,9 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || "";
  *
  *   const res = await api.entries.$post({ json: { type: "cigarette", nicotineMg: 1.2 } });
  */
-export const api = createApiClient<AppType>({ baseUrl: API_BASE_URL });
+export const api = createApiClient<AppType>({
+  baseUrl: API_BASE_URL,
+  includeCredentials: true,
+});
 
 export type ApiClient = typeof api;

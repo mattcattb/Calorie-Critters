@@ -1,5 +1,6 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { Button, Card, CardContent, CardHeader, CardTitle, Input, Label } from "../components/ui";
 import { signIn } from "../lib/auth";
 
 export const Route = createFileRoute("/login")({
@@ -32,44 +33,71 @@ function LoginPage() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-16 px-4">
-      <h1 className="text-2xl font-bold text-center mb-8">Sign In</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {error && (
-          <div className="bg-red-50 text-red-600 p-3 rounded-md">{error}</div>
-        )}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Email
-          </label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Password
-          </label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-            required
-          />
-        </div>
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 disabled:opacity-50"
-        >
-          {loading ? "Signing in..." : "Sign In"}
-        </button>
-      </form>
+    <div className="mx-auto mt-16 w-full max-w-md px-4">
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between text-sm text-muted-foreground">
+            <Link to="/" className="transition hover:text-foreground">
+              ← Back
+            </Link>
+            <Link
+              to="/signup"
+              className="transition hover:text-foreground"
+            >
+              Create account
+            </Link>
+          </div>
+          <CardTitle className="text-center text-2xl">Sign In</CardTitle>
+          <p className="text-center text-sm text-muted-foreground">
+            Welcome back. Keep your quit streak moving.
+          </p>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {error && (
+              <div className="rounded-md border border-danger/40 bg-danger/10 px-3 py-2 text-sm text-danger">
+                {error}
+              </div>
+            )}
+            <div className="field-grid">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@email.com"
+                required
+              />
+            </div>
+            <div className="field-grid">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                required
+              />
+            </div>
+            <Button
+              type="submit"
+              disabled={loading}
+              className="w-full"
+              effect="glow"
+            >
+              {loading ? "Signing in..." : "Sign In"}
+            </Button>
+            <p className="text-center text-sm text-muted-foreground">
+              New here?{" "}
+              <Link to="/signup" className="text-foreground hover:underline">
+                Create an account
+              </Link>
+            </p>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 }

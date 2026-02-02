@@ -1,5 +1,6 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { Button, Card, CardContent, CardHeader, CardTitle, Input, Label } from "../components/ui";
 import { signUp } from "../lib/auth";
 
 export const Route = createFileRoute("/signup")({
@@ -34,57 +35,83 @@ function SignupPage() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-16 px-4">
-      <h1 className="text-2xl font-bold text-center mb-8">Create Account</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {error && (
-          <div className="bg-red-50 text-red-600 p-3 rounded-md">{error}</div>
-        )}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Name
-          </label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Email
-          </label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Password
-          </label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-            required
-            minLength={8}
-          />
-        </div>
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 disabled:opacity-50"
-        >
-          {loading ? "Creating account..." : "Sign Up"}
-        </button>
-      </form>
+    <div className="mx-auto mt-16 w-full max-w-md px-4">
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between text-sm text-muted-foreground">
+            <Link to="/" className="transition hover:text-foreground">
+              ← Back
+            </Link>
+            <Link
+              to="/login"
+              className="transition hover:text-foreground"
+            >
+              Sign in
+            </Link>
+          </div>
+          <CardTitle className="text-center text-2xl">Create Account</CardTitle>
+          <p className="text-center text-sm text-muted-foreground">
+            Start building a calmer, nicotine-free routine.
+          </p>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {error && (
+              <div className="rounded-md border border-danger/40 bg-danger/10 px-3 py-2 text-sm text-danger">
+                {error}
+              </div>
+            )}
+            <div className="field-grid">
+              <Label htmlFor="name">Name</Label>
+              <Input
+                id="name"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Name"
+                required
+              />
+            </div>
+            <div className="field-grid">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@email.com"
+                required
+              />
+            </div>
+            <div className="field-grid">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="8+ characters"
+                required
+                minLength={8}
+              />
+            </div>
+            <Button
+              type="submit"
+              disabled={loading}
+              className="w-full"
+              effect="glow"
+            >
+              {loading ? "Creating account..." : "Sign Up"}
+            </Button>
+            <p className="text-center text-sm text-muted-foreground">
+              Already have an account?{" "}
+              <Link to="/login" className="text-foreground hover:underline">
+                Sign in
+              </Link>
+            </p>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 }

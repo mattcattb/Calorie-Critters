@@ -28,7 +28,7 @@ function LoginPage() {
       setError(result.error.message ?? "Login failed");
       setLoading(false);
     } else {
-      navigate({ to: "/dashboard" });
+      navigate({ to: "/" });
     }
   };
 

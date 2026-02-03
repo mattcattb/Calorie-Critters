@@ -30,7 +30,7 @@ function SignupPage() {
       setError(result.error.message ?? "Signup failed");
       setLoading(false);
     } else {
-      navigate({ to: "/dashboard" });
+      navigate({ to: "/" });
     }
   };
 

@@ -8,7 +8,7 @@ export function Card({
   return (
     <div
       className={cn(
-        "rounded-2xl border border-border bg-surface/80 p-6 shadow-[0_16px_40px_hsl(252_30%_6%/0.35)] backdrop-blur",
+        "rounded-3xl border border-border/85 bg-surface/90 p-5 shadow-[0_14px_30px_hsl(210_25%_22%/0.08)] backdrop-blur",
         className
       )}
       {...props}
@@ -45,7 +45,7 @@ export function CardContent({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("mt-4", className)} {...props} />;
+  return <div className={cn("mt-3", className)} {...props} />;
 }
 
 export function CardFooter({

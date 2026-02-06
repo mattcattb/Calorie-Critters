@@ -1,8 +1,9 @@
-import {createFileRoute} from "@tanstack/react-router";
+import {createFileRoute, Navigate} from "@tanstack/react-router";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {useState} from "react";
 import {api} from "../lib/api";
 import {useSession} from "../lib/auth";
+import {useOnboardingProfile} from "../lib/onboarding";
 import {
   Badge,
   Button,
@@ -24,6 +25,9 @@ export const Route = createFileRoute("/settings")({
 
 function SettingsPage() {
   const {data: session, isPending} = useSession();
+  const {data: profile, isPending: profilePending} = useOnboardingProfile(
+    Boolean(session)
+  );
   const {notify} = useToast();
   const queryClient = useQueryClient();
   const [name, setName] = useState("");
@@ -112,10 +116,14 @@ function SettingsPage() {
     },
   });
 
-  if (isPending) {
+  if (isPending || (session && profilePending)) {
     return (
       <div className="p-8 text-center text-muted-foreground">Loading...</div>
     );
+  }
+
+  if (session && profile && !profile.onboardingCompleted) {
+    return <Navigate to="/onboarding" replace />;
   }
 
   if (!session) {

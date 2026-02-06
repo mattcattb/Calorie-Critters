@@ -6,12 +6,8 @@ import tailwindVite from "@tailwindcss/vite";
 
 export default defineConfig({
   plugins: [
+    tailwindVite(),
     TanStackRouterVite({target: "react", autoCodeSplitting: true}),
     react(),
-    tailwindVite(),
   ],
-
-  server: {
-    port: 5173,
-  },
 });

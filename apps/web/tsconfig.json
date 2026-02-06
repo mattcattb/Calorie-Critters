@@ -24,7 +24,11 @@
     "types": ["vite/client", "node"],
     "paths": {
       "@nicflow/api/*": ["../api/*"]
-    }
+    },
+    "allowJs": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true
   },
-  "include": ["src", "vite.config.ts"]
+  "include": ["src/*/*.ts", "vite.config.ts"],
+  "exclude": ["node_modules"]
 }

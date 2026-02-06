@@ -2,9 +2,9 @@ import * as React from "react";
 import { Tooltip as BaseTooltip } from "@base-ui/react/tooltip";
 import { cn } from "../../lib/cn";
 
-type TooltipProps = BaseTooltip.Root.Props & {
-  content: React.ReactNode;
-  children: React.ReactElement;
+type TooltipProps = Omit<BaseTooltip.Root.Props, "children"> & {
+  content: React.ComponentProps<typeof BaseTooltip.Popup>["children"];
+  children: React.ComponentProps<typeof BaseTooltip.Trigger>["children"];
   align?: BaseTooltip.Positioner.Props["align"];
   side?: BaseTooltip.Positioner.Props["side"];
 };

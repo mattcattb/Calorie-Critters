@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import {
   CartesianGrid,
@@ -13,6 +13,7 @@ import {
 } from "recharts";
 import { api } from "../lib/api";
 import { useSession } from "../lib/auth";
+import { useOnboardingProfile } from "../lib/onboarding";
 import { Badge, Card, CardContent, CardHeader, CardTitle } from "../components/ui";
 import type { NicotineEntry } from "@nicflow/shared";
 
@@ -22,6 +23,9 @@ export const Route = createFileRoute("/stats")({
 
 function StatsPage() {
   const { data: session, isPending } = useSession();
+  const { data: profile, isPending: profilePending } = useOnboardingProfile(
+    Boolean(session)
+  );
 
   const { data: entries } = useQuery({
     queryKey: ["entries"],
@@ -47,10 +51,14 @@ function StatsPage() {
     },
   });
 
-  if (isPending) {
+  if (isPending || (session && profilePending)) {
     return (
       <div className="p-8 text-center text-muted-foreground">Loading...</div>
     );
+  }
+
+  if (session && profile && !profile.onboardingCompleted) {
+    return <Navigate to="/onboarding" replace />;
   }
 
   if (!session) {
@@ -105,7 +113,11 @@ function StatsPage() {
             <div className="text-3xl font-semibold text-primary">
               {stats?.currentLevelMg ?? 0} mg
             </div>
-            <p className="mt-2 text-sm text-muted-foreground">Active nicotine</p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              {stats?.adjustmentApplied
+                ? "Personalized estimate"
+                : "Active nicotine"}
+            </p>
           </CardContent>
         </Card>
         <Card>

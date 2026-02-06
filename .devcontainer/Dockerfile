@@ -17,6 +17,10 @@ RUN VERSION=$(curl -s https://api.github.com/repos/stripe/stripe-cli/releases/la
   rm stripe.tar.gz
 
 RUN npm i -g @openai/codex
+RUN npm install -g @anthropic-ai/claude-code
+RUN npm i -g @openai/codex
+
+
 
 COPY --from=bun /usr/local/bin/bun /usr/local/bin/bun
 RUN ln -s /usr/local/bin/bun /usr/local/bin/bunx

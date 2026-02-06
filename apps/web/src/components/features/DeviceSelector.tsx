@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import type { NicotineType } from "@nicflow/shared";
-import { Card, CardContent } from "../ui/card";
 import { cn } from "../../lib/cn";
 import {
   CigaretteIcon,
@@ -70,46 +69,44 @@ export function DeviceSelector({
   onSelect,
 }: DeviceSelectorProps) {
   return (
-    <Card className="border-border bg-surface/60">
-      <CardContent className="space-y-3">
-        <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
-          <span>Device</span>
-          {selectedDevice ? (
-            <span className="text-xs font-normal normal-case tracking-normal">
-              {
-                DEFAULT_DEVICES.find((device) => device.id === selectedDevice)
-                  ?.description
-              }
-            </span>
-          ) : null}
-        </div>
-        <div className="flex gap-2 overflow-x-auto pb-1">
-          {DEFAULT_DEVICES.map((device) => {
-            const isSelected = device.id === selectedDevice;
-            return (
-              <button
-                type="button"
-                key={device.id}
-                onClick={() => onSelect(device.id)}
-                className={cn(
-                  "flex shrink-0 items-center gap-2 rounded-full border px-3 py-1 text-xs transition",
-                  isSelected
-                    ? "border-primary/70 bg-primary/10 text-foreground"
-                    : "border-border/70 text-muted-foreground hover:border-primary/40"
-                )}
+    <div className="space-y-2">
+      <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
+        <span>Product</span>
+        {selectedDevice ? (
+          <span className="text-xs font-medium normal-case tracking-normal">
+            {
+              DEFAULT_DEVICES.find((device) => device.id === selectedDevice)
+                ?.description
+            }
+          </span>
+        ) : null}
+      </div>
+      <div className="flex gap-2 overflow-x-auto pb-1">
+        {DEFAULT_DEVICES.map((device) => {
+          const isSelected = device.id === selectedDevice;
+          return (
+            <button
+              type="button"
+              key={device.id}
+              onClick={() => onSelect(device.id)}
+              className={cn(
+                "flex min-h-11 shrink-0 items-center gap-2 rounded-2xl border px-3 py-2 text-xs font-medium transition",
+                isSelected
+                  ? "border-primary/50 bg-primary/12 text-foreground"
+                  : "border-border/70 bg-background/60 text-muted-foreground hover:border-primary/35"
+              )}
+            >
+              <span
+                className="flex h-5 w-5 items-center justify-center"
+                style={{ color: device.color }}
               >
-                <span
-                  className="flex h-5 w-5 items-center justify-center"
-                  style={{ color: device.color }}
-                >
-                  {device.icon}
-                </span>
-                {device.name}
-              </button>
-            );
-          })}
-        </div>
-      </CardContent>
-    </Card>
+                {device.icon}
+              </span>
+              {device.name}
+            </button>
+          );
+        })}
+      </div>
+    </div>
   );
 }

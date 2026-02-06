@@ -1,5 +1,11 @@
 import { z } from "zod";
-import { GOAL_STATUSES, GOAL_TYPES, NICOTINE_TYPES } from "./constants";
+import {
+  GOAL_STATUSES,
+  GOAL_TYPES,
+  NICOTINE_TYPES,
+  SEXES,
+  WEIGHT_UNITS,
+} from "./constants";
 
 export const createEntrySchema = z.object({
   type: z.enum(NICOTINE_TYPES),
@@ -36,6 +42,31 @@ export const updateGoalSchema = z.object({
   status: z.enum(GOAL_STATUSES).optional(),
 });
 
+export const updateProfileSchema = z
+  .object({
+    sex: z.enum(SEXES).optional(),
+    weight: z.number().positive().optional(),
+    weightUnit: z.enum(WEIGHT_UNITS).optional(),
+    onboardingCompleted: z.boolean().optional(),
+  })
+  .refine(
+    (data) =>
+      (!data.weight && !data.weightUnit) || (data.weight && data.weightUnit),
+    {
+      message: "Weight and weight unit must be provided together.",
+      path: ["weight"],
+    }
+  )
+  .refine(
+    (data) =>
+      !data.onboardingCompleted ||
+      Boolean(data.sex && data.weight && data.weightUnit),
+    {
+      message: "Sex and weight are required to complete onboarding.",
+      path: ["onboardingCompleted"],
+    }
+  );
+
 export type CreateEntryInput = z.infer<typeof createEntrySchema>;
 export type UpdateEntryInput = z.infer<typeof updateEntrySchema>;
 
@@ -44,3 +75,5 @@ export type UpdateProductInput = z.infer<typeof updateProductSchema>;
 
 export type CreateGoalInput = z.infer<typeof createGoalSchema>;
 export type UpdateGoalInput = z.infer<typeof updateGoalSchema>;
+
+export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;

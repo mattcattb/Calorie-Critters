@@ -1,9 +1,47 @@
 import { NICOTINE_HALF_LIFE_HOURS } from "./constants";
 import type { GoalType } from "./constants";
-import type { BloodstreamStats, CostStats, GoalProgress, TimestampLike } from "./types";
+import type {
+  BloodstreamStats,
+  BodyProfile,
+  CostStats,
+  GoalProgress,
+  TimestampLike,
+} from "./types";
 
 const MS_PER_HOUR = 60 * 60 * 1000;
 const MS_PER_DAY = 24 * MS_PER_HOUR;
+const DEFAULT_WEIGHT_KG = 70;
+const LB_TO_KG = 0.45359237;
+
+const toWeightKg = (weight?: number | null, unit?: "kg" | "lb" | null) => {
+  if (!weight || weight <= 0 || !unit) return null;
+  return unit === "lb" ? weight * LB_TO_KG : weight;
+};
+
+const getSexAdjustment = (sex?: BodyProfile["sex"] | null) => {
+  switch (sex) {
+    case "female":
+      return 0.97;
+    case "male":
+      return 1.0;
+    case "intersex":
+      return 1.0;
+    case "prefer_not_to_say":
+    default:
+      return 1.0;
+  }
+};
+
+const getProfileAdjustment = (profile?: BodyProfile | null) => {
+  if (!profile) return 1;
+  let factor = 1;
+  const weightKg = toWeightKg(profile.weight, profile.weightUnit);
+  if (weightKg) {
+    factor *= DEFAULT_WEIGHT_KG / weightKg;
+  }
+  factor *= getSexAdjustment(profile.sex);
+  return factor;
+};
 
 export const toDate = (value: TimestampLike): Date => {
   if (value instanceof Date) return value;
@@ -14,22 +52,25 @@ export const calculateNicotineRemaining = (
   nicotineMg: number,
   takenAt: TimestampLike,
   now: TimestampLike = new Date(),
-  halfLifeHours = NICOTINE_HALF_LIFE_HOURS
+  halfLifeHours = NICOTINE_HALF_LIFE_HOURS,
+  profile?: BodyProfile
 ) => {
   const takenAtDate = toDate(takenAt).getTime();
   const nowDate = toDate(now).getTime();
   const timePassed = Math.max(0, nowDate - takenAtDate);
   const halfLives = timePassed / (halfLifeHours * MS_PER_HOUR);
-  return nicotineMg * Math.pow(0.5, halfLives);
+  const adjustment = getProfileAdjustment(profile);
+  return nicotineMg * Math.pow(0.5, halfLives) * adjustment;
 };
 
 export const calculateBloodstreamStats = (
   entries: Array<{ nicotineMg: number; timestamp: TimestampLike }>,
-  options?: { now?: TimestampLike; windowHours?: number }
+  options?: { now?: TimestampLike; windowHours?: number; profile?: BodyProfile }
 ): BloodstreamStats => {
   const now = toDate(options?.now ?? new Date());
   const windowHours = options?.windowHours ?? 24;
   const since = new Date(now.getTime() - windowHours * MS_PER_HOUR);
+  const adjustment = getProfileAdjustment(options?.profile);
 
   const recentEntries = entries.filter(
     (entry) => toDate(entry.timestamp).getTime() >= since.getTime()
@@ -40,7 +81,9 @@ export const calculateBloodstreamStats = (
     currentLevel += calculateNicotineRemaining(
       entry.nicotineMg,
       entry.timestamp,
-      now
+      now,
+      undefined,
+      options?.profile
     );
   }
 
@@ -48,6 +91,8 @@ export const calculateBloodstreamStats = (
     currentLevelMg: Math.round(currentLevel * 100) / 100,
     entriesLast24h: recentEntries.length,
     totalNicotineMg: recentEntries.reduce((sum, e) => sum + e.nicotineMg, 0),
+    adjustmentApplied: adjustment !== 1,
+    adjustmentFactor: Math.round(adjustment * 100) / 100,
   };
 };
 

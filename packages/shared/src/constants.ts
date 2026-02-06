@@ -19,6 +19,18 @@ export type GoalType = (typeof GOAL_TYPES)[number];
 export const GOAL_STATUSES = ["active", "completed", "abandoned"] as const;
 export type GoalStatus = (typeof GOAL_STATUSES)[number];
 
+// Onboarding profile options
+export const SEXES = [
+  "female",
+  "male",
+  "intersex",
+  "prefer_not_to_say",
+] as const;
+export type Sex = (typeof SEXES)[number];
+
+export const WEIGHT_UNITS = ["kg", "lb"] as const;
+export type WeightUnit = (typeof WEIGHT_UNITS)[number];
+
 // Nicotine half-life is approximately 2 hours
 export const NICOTINE_HALF_LIFE_HOURS = 2;
 

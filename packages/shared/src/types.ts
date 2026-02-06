@@ -1,4 +1,4 @@
-import type { GoalStatus, GoalType, NicotineType } from "./constants";
+import type { GoalStatus, GoalType, NicotineType, Sex, WeightUnit } from "./constants";
 
 export type TimestampLike = string | number | Date;
 
@@ -55,6 +55,8 @@ export interface BloodstreamStats {
   currentLevelMg: number;
   entriesLast24h: number;
   totalNicotineMg: number;
+  adjustmentApplied?: boolean;
+  adjustmentFactor?: number;
 }
 
 export interface CostStats {
@@ -71,4 +73,14 @@ export interface GoalProgress {
   percentComplete: number;
   daysRemaining?: number;
   onTrack: boolean;
+}
+
+export interface BodyProfile {
+  sex?: Sex | null;
+  weight?: number | null;
+  weightUnit?: WeightUnit | null;
+}
+
+export interface UserProfile extends BodyProfile {
+  onboardingCompleted?: boolean | null;
 }

@@ -15,6 +15,13 @@
       "when": 1769804256107,
       "tag": "0001_fine_purple_man",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1770142428137,
+      "tag": "0002_redundant_ulik",
+      "breakpoints": true
     }
   ]
 }

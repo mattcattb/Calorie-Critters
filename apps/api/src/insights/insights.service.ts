@@ -2,6 +2,7 @@ import { and, gte, eq, desc } from "drizzle-orm";
 import { calculateNicotineRemaining } from "@nicflow/shared";
 import { db } from "../db";
 import { nicotineEntry } from "../db/schema";
+import { onboardingService } from "../onboarding/onboarding.service";
 
 const clampInt = (value: number, min: number, max: number) =>
   Math.max(min, Math.min(max, value));
@@ -73,6 +74,7 @@ export const insightsService = {
     const safeInterval = clampInt(intervalMinutes, 5, 240);
     const now = new Date();
     const since = new Date(now.getTime() - safeHours * 60 * 60 * 1000);
+    const profile = await onboardingService.getProfile(userId);
 
     const entries = await db
       .select({
@@ -90,7 +92,13 @@ export const insightsService = {
       const current = new Date(ts);
       let level = 0;
       for (const entry of entries) {
-        level += calculateNicotineRemaining(entry.nicotineMg, entry.timestamp, current);
+        level += calculateNicotineRemaining(
+          entry.nicotineMg,
+          entry.timestamp,
+          current,
+          undefined,
+          profile
+        );
       }
       points.push({
         timestamp: current.toISOString(),

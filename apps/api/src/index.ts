@@ -11,6 +11,7 @@ import {productsController} from "./products/products.controller";
 import {goalsController} from "./goals/goals.controller";
 import {billingController, billingWebhook} from "./billing/billing.controller";
 import {insightsController} from "./insights/insights.controller";
+import {onboardingController} from "./onboarding/onboarding.controller";
 
 const app = createRouter();
 addGlobalMiddlewares(app);
@@ -26,6 +27,7 @@ const api = createRouter()
   .route("/products", productsController)
   .route("/goals", goalsController)
   .route("/billing", billingController)
+  .route("/onboarding", onboardingController)
   .route("/insights", insightsController);
 
 app.route("/api", api);

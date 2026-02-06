@@ -50,10 +50,6 @@ export const auth = betterAuth({
           },
         }
       : {}),
-    // github: {
-    //   clientId: appEnv.GITHUB_CLIENT_ID!,
-    //   clientSecret: appEnv.GITHUB_CLIENT_SECRET!,
-    // },
   },
 });
 

@@ -8,11 +8,19 @@ import {
   real,
   uuid,
 } from "drizzle-orm/pg-core";
-import { GOAL_STATUSES, GOAL_TYPES, NICOTINE_TYPES } from "@nicflow/shared";
+import {
+  GOAL_STATUSES,
+  GOAL_TYPES,
+  NICOTINE_TYPES,
+  SEXES,
+  WEIGHT_UNITS,
+} from "@nicflow/shared";
 
 export const nicotineTypeEnum = pgEnum("nicotine_type", NICOTINE_TYPES);
 export const goalTypeEnum = pgEnum("goal_type", GOAL_TYPES);
 export const goalStatusEnum = pgEnum("goal_status", GOAL_STATUSES);
+export const sexEnum = pgEnum("sex", SEXES);
+export const weightUnitEnum = pgEnum("weight_unit", WEIGHT_UNITS);
 
 // Better Auth tables
 export const user = pgTable("user", {
@@ -21,6 +29,12 @@ export const user = pgTable("user", {
   email: text("email").notNull().unique(),
   emailVerified: boolean("email_verified").notNull().default(false),
   image: text("image"),
+  sex: sexEnum("sex"),
+  weight: real("weight"),
+  weightUnit: weightUnitEnum("weight_unit"),
+  onboardingCompleted: boolean("onboarding_completed")
+    .notNull()
+    .default(false),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
   stripeCustomerId: text("stripe_customer_id"),

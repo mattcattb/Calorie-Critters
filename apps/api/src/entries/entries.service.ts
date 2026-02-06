@@ -3,6 +3,7 @@ import { calculateBloodstreamStats, calculateCostStats } from "@nicflow/shared";
 import { NotFoundException } from "../common/errors";
 import { db } from "../db";
 import { nicotineEntry, product } from "../db/schema";
+import { onboardingService } from "../onboarding/onboarding.service";
 import type { CreateEntryInput, UpdateEntryInput } from "./entries.schema";
 
 export const entriesService = {
@@ -110,7 +111,8 @@ export const entriesService = {
       )
       .orderBy(desc(nicotineEntry.timestamp));
 
-    return calculateBloodstreamStats(entries, { now: new Date() });
+    const profile = await onboardingService.getProfile(userId);
+    return calculateBloodstreamStats(entries, { now: new Date(), profile });
   },
 
   async getCostStats(userId: string) {

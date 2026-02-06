@@ -64,33 +64,86 @@ export const calculateNicotineRemaining = (
 };
 
 export const calculateBloodstreamStats = (
-  entries: Array<{ nicotineMg: number; timestamp: TimestampLike }>,
-  options?: { now?: TimestampLike; windowHours?: number; profile?: BodyProfile }
+  entries: Array<{
+    nicotineMg: number;
+    timestamp: TimestampLike;
+    amount?: number | null;
+  }>,
+  options?: {
+    now?: TimestampLike;
+    windowHours?: number;
+    profile?: BodyProfile;
+    baselineLevelMg?: number;
+    baselineWindowHours?: number;
+    sampleMinutes?: number;
+  }
 ): BloodstreamStats => {
   const now = toDate(options?.now ?? new Date());
   const windowHours = options?.windowHours ?? 24;
   const since = new Date(now.getTime() - windowHours * MS_PER_HOUR);
   const adjustment = getProfileAdjustment(options?.profile);
+  const baselineLevelMg = options?.baselineLevelMg ?? 2;
+  const baselineWindowHours = options?.baselineWindowHours ?? 24;
+  const sampleMinutes = options?.sampleMinutes ?? 5;
 
   const recentEntries = entries.filter(
     (entry) => toDate(entry.timestamp).getTime() >= since.getTime()
   );
 
-  let currentLevel = 0;
-  for (const entry of recentEntries) {
-    currentLevel += calculateNicotineRemaining(
-      entry.nicotineMg,
-      entry.timestamp,
-      now,
-      undefined,
-      options?.profile
-    );
+  const calculateLevelAt = (time: Date, sourceEntries = entries) => {
+    let total = 0;
+    for (const entry of sourceEntries) {
+      total += calculateNicotineRemaining(
+        entry.nicotineMg,
+        entry.timestamp,
+        time,
+        undefined,
+        options?.profile
+      );
+    }
+    return total;
+  };
+
+  const currentLevel = calculateLevelAt(now, recentEntries);
+
+  const startOfDay = new Date(now);
+  startOfDay.setHours(0, 0, 0, 0);
+  const todayEntries = entries.filter(
+    (entry) => toDate(entry.timestamp).getTime() >= startOfDay.getTime()
+  );
+  const todayUsage = todayEntries.reduce(
+    (sum, entry) => sum + (entry.amount ?? 1),
+    0
+  );
+
+  const peakSteps = Math.ceil(
+    (now.getTime() - startOfDay.getTime()) / (sampleMinutes * 60 * 1000)
+  );
+  let peakLevel = 0;
+  for (let i = 0; i <= peakSteps; i += 1) {
+    const time = new Date(startOfDay.getTime() + i * sampleMinutes * 60 * 1000);
+    peakLevel = Math.max(peakLevel, calculateLevelAt(time));
+  }
+
+  const baselineSteps = Math.ceil(
+    (baselineWindowHours * 60) / sampleMinutes
+  );
+  let timeToBaselineHours = baselineWindowHours;
+  for (let i = 0; i <= baselineSteps; i += 1) {
+    const time = new Date(now.getTime() + i * sampleMinutes * 60 * 1000);
+    if (calculateLevelAt(time) <= baselineLevelMg) {
+      timeToBaselineHours = (i * sampleMinutes) / 60;
+      break;
+    }
   }
 
   return {
     currentLevelMg: Math.round(currentLevel * 100) / 100,
     entriesLast24h: recentEntries.length,
     totalNicotineMg: recentEntries.reduce((sum, e) => sum + e.nicotineMg, 0),
+    todayUsage,
+    peakLevelTodayMg: Math.round(peakLevel * 100) / 100,
+    timeToBaselineHours: Math.round(timeToBaselineHours * 100) / 100,
     adjustmentApplied: adjustment !== 1,
     adjustmentFactor: Math.round(adjustment * 100) / 100,
   };

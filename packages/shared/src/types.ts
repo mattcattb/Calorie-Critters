@@ -55,6 +55,9 @@ export interface BloodstreamStats {
   currentLevelMg: number;
   entriesLast24h: number;
   totalNicotineMg: number;
+  todayUsage: number;
+  peakLevelTodayMg: number;
+  timeToBaselineHours: number;
   adjustmentApplied?: boolean;
   adjustmentFactor?: number;
 }

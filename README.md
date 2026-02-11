@@ -38,6 +38,7 @@ packages/
 ## Roadmap
 
 ### Phase 1 — Foundation
+
 - [x] Monorepo setup (Bun workspaces)
 - [x] Auth (email/password sign up & sign in)
 - [x] Postgres + Drizzle ORM
@@ -47,22 +48,27 @@ packages/
 - [x] Web UI: landing page, dashboard, profile setup, food logging, food management
 
 ### Phase 2 — Core Experience
+
 - [ ] Onboarding flow (height, weight, sex, activity level, goals)
 - [ ] TDEE / macro target calculator
 - [ ] Daily macro progress bars & summary
 - [ ] Critter selection and basic display
+- [ ] Macro Configurability and structuring for goals and algorithm
 
 ### Phase 3 — Critter System
+
 - [ ] Critter mood/animations tied to goal streaks
 - [ ] Critter growth stages based on consistency
 - [ ] Streak tracking and rewards
 
 ### Phase 4 — Smart Features
+
 - [ ] Camera-based calorie estimation (AI)
 - [ ] Food search with barcode scanning
 - [ ] Meal templates and favorites
 
 ### Phase 5 — Mobile
+
 - [ ] Expo mobile app with offline-first SQLite
 - [ ] Sync between mobile and server
 - [ ] Push notifications for logging reminders

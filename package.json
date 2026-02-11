@@ -1,14 +1,14 @@
 {
-  "name": "matty-stack",
+  "name": "calorie-critters",
   "private": true,
   "workspaces": ["packages/*"],
   "scripts": {
     "dev": "bun run --filter '*' dev",
-    "dev:server": "bun run --filter @matty-stack/server dev",
-    "dev:web": "bun run --filter @matty-stack/web dev",
+    "dev:server": "bun run --filter @calorie-critters/server dev",
+    "dev:web": "bun run --filter @calorie-critters/web dev",
     "build": "bun run --filter '*' build",
-    "db:generate": "bun run --filter @matty-stack/server db:generate",
-    "db:migrate": "bun run --filter @matty-stack/server db:migrate",
-    "db:studio": "bun run --filter @matty-stack/server db:studio"
+    "db:generate": "bun run --filter @calorie-critters/server db:generate",
+    "db:migrate": "bun run --filter @calorie-critters/server db:migrate",
+    "db:studio": "bun run --filter @calorie-critters/server db:studio"
   }
 }

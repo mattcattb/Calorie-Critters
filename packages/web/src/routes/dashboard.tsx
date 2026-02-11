@@ -4,48 +4,12 @@ import { useQuery } from "@tanstack/react-query";
 import { Button, Card, CardContent } from "../components/ui";
 import { apiFetch } from "../lib/api";
 import { useSession } from "../lib/auth";
-
-type DailySummary = {
-  date: string;
-  totalCalories: number;
-  totalProtein: number;
-  totalCarbs: number;
-  totalFat: number;
-};
-
-type FoodItem = {
-  id: string;
-  name: string;
-  brand: string | null;
-  servingSize: number;
-  servingUnit: string;
-  calories: number;
-  protein: number;
-  carbs: number;
-  fat: number;
-};
-
-type FoodEntry = {
-  id: string;
-  userId: string;
-  foodItemId: string;
-  servings: number;
-  mealType: string;
-  loggedAt: string;
-  notes: string | null;
-};
-
-type EntryWithFood = {
-  entry: FoodEntry;
-  food: FoodItem;
-};
-
-type UserProfile = {
-  calorieTarget: number | null;
-  proteinTarget: number | null;
-  carbTarget: number | null;
-  fatTarget: number | null;
-};
+import type {
+  UserProfile,
+  EntryWithFood,
+  DailySummary,
+} from "@calorie-critters/shared";
+import { MEAL_TYPES } from "@calorie-critters/shared";
 
 export const Route = createFileRoute("/dashboard")({
   component: DashboardPage,
@@ -84,8 +48,6 @@ function MacroBar({
   );
 }
 
-const MEAL_ORDER = ["breakfast", "lunch", "dinner", "snack"] as const;
-
 function DashboardPage() {
   const { data: session, isPending } = useSession();
   const today = new Date().toISOString().split("T")[0];
@@ -122,7 +84,7 @@ function DashboardPage() {
   const profile = profileQuery.data;
   const entries = entriesQuery.data ?? [];
 
-  const entriesByMeal = MEAL_ORDER.map((meal) => ({
+  const entriesByMeal = MEAL_TYPES.map((meal) => ({
     meal,
     items: entries.filter((e) => e.entry.mealType === meal),
   }));

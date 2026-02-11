@@ -1,4 +1,4 @@
-import { Checkbox as BaseCheckbox } from "@base-ui/react/checkbox";
+import { Checkbox as BaseCheckbox } from "@base-ui-components/react/checkbox";
 import { cn } from "../../lib/cn";
 
 export type CheckboxProps = BaseCheckbox.Root.Props & {

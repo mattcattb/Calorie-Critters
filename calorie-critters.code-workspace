@@ -1,6 +1,7 @@
 {
   "folders": [
     { "path": "." },
+    { "path": "packages/shared" },
     { "path": "packages/server" },
     { "path": "packages/web" }
   ],

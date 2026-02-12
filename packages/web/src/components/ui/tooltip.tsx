@@ -1,6 +1,6 @@
 import * as React from "react";
-import {Tooltip as BaseTooltip} from "@base-ui-components/react/tooltip";
-import {cn} from "../../lib/cn";
+import { Tooltip as BaseTooltip } from "@base-ui-components/react/tooltip";
+import { cn } from "../../lib/cn";
 
 type TooltipProps = Omit<BaseTooltip.Root.Props, "children"> & {
   content: React.ComponentProps<typeof BaseTooltip.Popup>["children"];
@@ -24,8 +24,9 @@ export function Tooltip({
           <BaseTooltip.Positioner align={align} side={side} className="z-50">
             <BaseTooltip.Popup
               className={cn(
-                "rounded-md border border-border bg-surface-elevated px-3 py-2 text-xs text-foreground shadow-lg",
-              )}>
+                "rounded-xl border border-border bg-surface-elevated px-3 py-2 text-xs font-semibold text-foreground shadow-[0_10px_24px_hsl(336_42%_40%/0.2)]"
+              )}
+            >
               <BaseTooltip.Arrow className="fill-surface-elevated" />
               {content}
             </BaseTooltip.Popup>

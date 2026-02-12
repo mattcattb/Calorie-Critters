@@ -1,8 +1,6 @@
 @layer components {
   .btn-glow {
-    box-shadow:
-      0 0 0 1px hsl(var(--ring) / 0.26),
-      0 10px 24px hsl(var(--ring) / 0.22);
+    box-shadow: 0 0 0 2px hsl(var(--ring) / 0.22), 0 10px 18px hsl(var(--ring) / 0.24);
   }
 
   .btn-sheen {
@@ -13,8 +11,8 @@
   .btn-sheen::after {
     content: "";
     position: absolute;
-    inset: -60% 40% auto -60%;
-    height: 200%;
+    inset: -50% 40% auto -60%;
+    height: 180%;
     background: linear-gradient(
       120deg,
       transparent,
@@ -23,7 +21,7 @@
     );
     transform: rotate(8deg);
     opacity: 0;
-    transition: opacity 200ms ease, transform 350ms ease;
+    transition: opacity 220ms ease, transform 320ms ease;
   }
 
   .btn-sheen:hover::after {

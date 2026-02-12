@@ -9,3 +9,6 @@ export * from "./switch";
 export * from "./textarea";
 export * from "./tooltip";
 export * from "./toast";
+export * from "./dialog";
+
+export * from "./icon";

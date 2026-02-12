@@ -7,10 +7,10 @@ export type CheckboxProps = BaseCheckbox.Root.Props & {
 
 export function Checkbox({ className, label, ...props }: CheckboxProps) {
   return (
-    <label className="inline-flex items-center gap-2 text-sm text-foreground/90">
+    <label className="inline-flex items-center gap-2 text-sm font-semibold text-foreground/90">
       <BaseCheckbox.Root
         className={cn(
-          "inline-flex h-5 w-5 items-center justify-center rounded border border-border bg-surface/70",
+          "inline-flex h-5 w-5 items-center justify-center rounded-md border border-border bg-surface-elevated/85 shadow-[0_1px_0_hsl(0_0%_100%/0.65)]",
           "transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
           "data-[checked]:border-primary data-[checked]:bg-primary",
           "disabled:cursor-not-allowed disabled:opacity-60",

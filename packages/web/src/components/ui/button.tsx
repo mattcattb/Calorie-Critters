@@ -4,26 +4,26 @@ import { cn } from "../../lib/cn";
 
 export const buttonStyles = tv({
   base: [
-    "inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-all",
+    "inline-flex items-center justify-center gap-2 rounded-2xl border font-black tracking-tight transition-all",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
     "disabled:pointer-events-none disabled:opacity-60",
   ],
   variants: {
     variant: {
       primary:
-        "bg-primary text-primary-foreground shadow-glow hover:brightness-105 active:brightness-95",
+        "border-indigo-600 bg-indigo-600 text-white shadow-lg shadow-indigo-200 hover:brightness-105 active:brightness-95",
       secondary:
-        "bg-surface-elevated text-foreground hover:bg-surface-elevated/85",
+        "border-slate-100 bg-indigo-50 text-indigo-700 hover:bg-indigo-100",
       outline:
-        "border border-border text-foreground hover:border-primary/60 hover:bg-primary/10",
-      ghost: "text-foreground hover:bg-muted/60",
+        "border-slate-200 bg-white text-slate-700 hover:border-indigo-200 hover:text-indigo-700",
+      ghost: "border-transparent bg-transparent text-slate-600 hover:bg-slate-100",
       danger:
-        "bg-danger text-white hover:brightness-110 active:brightness-95",
+        "border-rose-200 bg-rose-50 text-rose-600 hover:bg-rose-100",
     },
     size: {
-      sm: "h-9 px-3 text-sm",
-      md: "h-11 px-4 text-sm",
-      lg: "h-12 px-6 text-base",
+      sm: "h-10 px-4 text-sm",
+      md: "h-12 px-6 text-sm",
+      lg: "h-14 px-8 text-base",
     },
     effect: {
       none: "",

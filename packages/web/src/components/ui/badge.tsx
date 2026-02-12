@@ -3,14 +3,14 @@ import { tv, type VariantProps } from "tailwind-variants";
 import { cn } from "../../lib/cn";
 
 const badgeStyles = tv({
-  base: "inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold",
+  base: "inline-flex items-center gap-1 rounded-full border border-transparent px-3 py-1 text-xs font-semibold",
   variants: {
     variant: {
-      primary: "bg-primary/20 text-primary",
-      neutral: "bg-muted text-muted-foreground",
-      success: "bg-success/20 text-success",
-      warning: "bg-warning/20 text-warning",
-      danger: "bg-danger/20 text-danger",
+      primary: "border-primary/20 bg-primary/15 text-primary",
+      neutral: "border-border/75 bg-surface-2 text-muted-foreground",
+      success: "border-success/20 bg-success/15 text-success",
+      warning: "border-warning/20 bg-warning/18 text-warning",
+      danger: "border-danger/20 bg-danger/15 text-danger",
     },
   },
   defaultVariants: {

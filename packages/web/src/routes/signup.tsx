@@ -2,6 +2,9 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Button, Card, CardContent, CardHeader, CardTitle, Input, Label } from "../components/ui";
 import { signUp } from "../lib/auth";
+import { apiFetch } from "../lib/api";
+import { isProfileOnboardingComplete } from "../lib/onboarding";
+import type { UserProfile } from "@calorie-critters/shared";
 
 export const Route = createFileRoute("/signup")({
   component: SignupPage,
@@ -30,37 +33,45 @@ function SignupPage() {
       setError(result.error.message ?? "Signup failed");
       setLoading(false);
     } else {
-      navigate({ to: "/" });
+      try {
+        const profile = await apiFetch<UserProfile | null>("/api/profile");
+        if (isProfileOnboardingComplete(profile)) {
+          navigate({ to: "/dashboard" });
+        } else {
+          navigate({ to: "/onboarding" });
+        }
+      } catch {
+        navigate({ to: "/onboarding" });
+      }
     }
   };
 
   return (
-    <div className="mx-auto mt-16 w-full max-w-md px-4">
-      <Card>
+    <div className="mx-auto w-full max-w-md py-6 sm:py-10">
+      <Card className="border-primary/20">
         <CardHeader>
           <div className="flex items-center justify-between text-sm text-muted-foreground">
             <Link to="/" className="transition hover:text-foreground">
-              ← Back
+              Back
             </Link>
-            <Link
-              to="/login"
-              className="transition hover:text-foreground"
-            >
+            <Link to="/login" className="transition hover:text-foreground">
               Sign in
             </Link>
           </div>
-          <CardTitle className="text-center text-2xl">Create Account</CardTitle>
+          <CardTitle className="text-center text-[1.8rem]">Create Account</CardTitle>
           <p className="text-center text-sm text-muted-foreground">
-            Create an account to start a new project.
+            Start your companion journey in under a minute.
           </p>
         </CardHeader>
+
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
-              <div className="rounded-md border border-danger/40 bg-danger/10 px-3 py-2 text-sm text-danger">
+              <div className="rounded-[var(--radius-sm)] border border-danger/40 bg-danger/10 px-3 py-2 text-sm text-danger">
                 {error}
               </div>
             )}
+
             <div className="field-grid">
               <Label htmlFor="name">Name</Label>
               <Input
@@ -72,6 +83,7 @@ function SignupPage() {
                 required
               />
             </div>
+
             <div className="field-grid">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -83,6 +95,7 @@ function SignupPage() {
                 required
               />
             </div>
+
             <div className="field-grid">
               <Label htmlFor="password">Password</Label>
               <Input
@@ -95,17 +108,14 @@ function SignupPage() {
                 minLength={8}
               />
             </div>
-            <Button
-              type="submit"
-              disabled={loading}
-              className="w-full"
-              effect="glow"
-            >
+
+            <Button type="submit" disabled={loading} className="w-full" effect="glow">
               {loading ? "Creating account..." : "Sign Up"}
             </Button>
+
             <p className="text-center text-sm text-muted-foreground">
-              Already have an account?{" "}
-              <Link to="/login" className="text-foreground hover:underline">
+              Already have an account? {" "}
+              <Link to="/login" className="font-semibold text-foreground hover:underline">
                 Sign in
               </Link>
             </p>

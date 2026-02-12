@@ -71,15 +71,15 @@ function ToastCard({
 }) {
   const tone =
     toast.type === "error"
-      ? "border-danger/40 bg-danger/15 text-danger"
+      ? "border-danger/45 bg-danger/15 text-danger"
       : toast.type === "success"
-      ? "border-success/40 bg-success/15 text-success"
-      : "border-border bg-surface-elevated text-foreground";
+      ? "border-success/45 bg-success/15 text-success"
+      : "border-border/80 bg-surface-elevated text-foreground";
 
   return (
     <div
       className={cn(
-        "pointer-events-auto rounded-lg border px-4 py-3 text-sm shadow-lg backdrop-blur",
+        "pointer-events-auto rounded-2xl border px-4 py-3 text-sm shadow-[0_12px_24px_hsl(336_42%_40%/0.2)] backdrop-blur",
         tone
       )}
       role="status"

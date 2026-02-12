@@ -13,34 +13,29 @@ export function TargetsStep({
   onAutoCalculate,
 }: TargetsStepProps) {
   return (
-    <div className="space-y-3 rounded-2xl border border-border/70 bg-surface/60 p-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h3 className="font-semibold">Targets</h3>
-          <p className="text-sm text-muted-foreground">
-            Auto-calculate and adjust if needed.
-          </p>
-        </div>
-        <Button type="button" variant="outline" onClick={onAutoCalculate}>
-          Calculate Targets
+    <div className="space-y-6 rounded-[2rem] border border-slate-200 bg-white p-4 sm:p-6">
+      <div className="rounded-[1rem] bg-indigo-50 p-3">
+        <Button type="button" className="h-12 w-full rounded-[0.9rem]" onClick={onAutoCalculate}>
+          Use Recommended Targets
         </Button>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="field-grid">
-          <Label htmlFor="calories">Calorie Target (kcal)</Label>
-          <Input
-            id="calories"
-            type="number"
-            min="0"
-            step="1"
-            value={form.calorieTarget}
-            onChange={(event) => onChange({ calorieTarget: event.target.value })}
-          />
-        </div>
+      <div className="space-y-1 border-b border-slate-100 pb-5">
+        <p className="text-xs font-black uppercase tracking-[0.1em] text-slate-400">Daily Calories</p>
+        <Input
+          id="calories"
+          type="number"
+          min="0"
+          step="1"
+          value={form.calorieTarget}
+          onChange={(event) => onChange({ calorieTarget: event.target.value })}
+          className="h-auto border-0 bg-transparent px-0 py-0 text-6xl font-black text-indigo-600 shadow-none focus-visible:ring-0"
+        />
+      </div>
 
+      <div className="grid gap-4 sm:grid-cols-3">
         <div className="field-grid">
-          <Label htmlFor="protein">Protein Target (g)</Label>
+          <Label htmlFor="protein">Protein</Label>
           <Input
             id="protein"
             type="number"
@@ -48,11 +43,12 @@ export function TargetsStep({
             step="1"
             value={form.proteinTarget}
             onChange={(event) => onChange({ proteinTarget: event.target.value })}
+            className="h-14 rounded-[1rem] bg-slate-50 text-2xl font-black"
           />
         </div>
 
         <div className="field-grid">
-          <Label htmlFor="carbs">Carb Target (g)</Label>
+          <Label htmlFor="carbs">Carbs</Label>
           <Input
             id="carbs"
             type="number"
@@ -60,11 +56,12 @@ export function TargetsStep({
             step="1"
             value={form.carbTarget}
             onChange={(event) => onChange({ carbTarget: event.target.value })}
+            className="h-14 rounded-[1rem] bg-slate-50 text-2xl font-black"
           />
         </div>
 
         <div className="field-grid">
-          <Label htmlFor="fat">Fat Target (g)</Label>
+          <Label htmlFor="fat">Fats</Label>
           <Input
             id="fat"
             type="number"
@@ -72,6 +69,7 @@ export function TargetsStep({
             step="1"
             value={form.fatTarget}
             onChange={(event) => onChange({ fatTarget: event.target.value })}
+            className="h-14 rounded-[1rem] bg-slate-50 text-2xl font-black"
           />
         </div>
       </div>

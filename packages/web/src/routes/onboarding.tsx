@@ -2,7 +2,6 @@ import { createFileRoute, Navigate, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  calculateAge,
   calculateBMR,
   calculateMacroTargets,
   calculateTDEE,
@@ -11,7 +10,7 @@ import {
   type UpsertProfileInput,
   type UserProfile,
 } from "@calorie-critters/shared";
-import { Badge, Button, Card, CardContent, useToast } from "../components/ui";
+import { Button, Card, CardContent, useToast } from "../components/ui";
 import { useSession } from "../lib/auth";
 import { apiFetch } from "../lib/api";
 import { isProfileOnboardingComplete } from "../lib/onboarding";
@@ -32,7 +31,7 @@ export const Route = createFileRoute("/onboarding")({
   component: OnboardingPage,
 });
 
-const STEP_LABELS = ["Basics", "Lifestyle", "Targets"];
+const STEP_LABELS = ["Goal", "About You", "Set Targets"];
 
 function getErrorMessage(error: unknown): string {
   if (error instanceof Error && error.message) {
@@ -43,20 +42,34 @@ function getErrorMessage(error: unknown): string {
 
 function validateStep(step: number, form: ProfileFormState): string | null {
   if (step === 0) {
-    if (!form.dateOfBirth || !form.height || !form.weight) {
-      return "Please add date of birth, height, and weight.";
-    }
-    const height = parseNumberOrNull(form.height);
-    const weight = parseNumberOrNull(form.weight);
-    if (height === null || height <= 0 || weight === null || weight <= 0) {
-      return "Height and weight must be valid positive numbers.";
+    if (!form.goal) {
+      return "Please choose your goal.";
     }
     return null;
   }
 
   if (step === 1) {
-    if (!form.sex || !form.activityLevel || !form.goal) {
-      return "Please select sex, activity level, and goal.";
+    if (!form.age || !form.heightFeet || form.heightInches === "" || !form.weight || !form.sex || !form.activityLevel) {
+      return "Please complete age, height, weight, gender, and activity level.";
+    }
+
+    const age = parseNumberOrNull(form.age, true);
+    const heightFeet = parseNumberOrNull(form.heightFeet, true);
+    const heightInches = parseNumberOrNull(form.heightInches);
+    const weight = parseNumberOrNull(form.weight);
+
+    if (
+      age === null ||
+      age <= 0 ||
+      heightFeet === null ||
+      heightFeet < 0 ||
+      heightInches === null ||
+      heightInches < 0 ||
+      heightInches > 11 ||
+      weight === null ||
+      weight <= 0
+    ) {
+      return "Enter valid values (inches must be between 0 and 11).";
     }
     return null;
   }
@@ -89,14 +102,21 @@ function OnboardingPage() {
   useEffect(() => {
     if (profileQuery.data !== undefined) {
       const mapped = mapProfileToForm(profileQuery.data);
+
       if (profileQuery.data?.unitSystem === "metric") {
-        mapped.height = mapped.height
-          ? String(Math.round(convertHeight(Number(mapped.height), "metric", "imperial") * 10) / 10)
-          : "";
-        mapped.weight = mapped.weight
-          ? String(Math.round(convertWeight(Number(mapped.weight), "metric", "imperial") * 10) / 10)
-          : "";
+        if (profileQuery.data.height !== null) {
+          const imperialHeight = convertHeight(profileQuery.data.height, "metric", "imperial");
+          const feet = Math.floor(imperialHeight / 12);
+          const inches = Math.round((imperialHeight % 12) * 10) / 10;
+          mapped.heightFeet = String(feet);
+          mapped.heightInches = String(inches);
+        }
+
+        if (profileQuery.data.weight !== null) {
+          mapped.weight = String(Math.round(convertWeight(profileQuery.data.weight, "metric", "imperial") * 10) / 10);
+        }
       }
+
       mapped.unitSystem = "imperial";
       setForm(mapped);
     }
@@ -127,6 +147,7 @@ function OnboardingPage() {
   const canGoBack = currentStep > 0;
   const isFinalStep = currentStep === STEP_LABELS.length - 1;
   const stepValidationError = useMemo(() => validateStep(currentStep, form), [currentStep, form]);
+  const isCurrentStepValid = !stepValidationError;
 
   if (!isPending && !session) {
     return <Navigate to="/login" replace />;
@@ -137,30 +158,38 @@ function OnboardingPage() {
   };
 
   const handleAutoCalculate = () => {
-    if (!form.height || !form.weight || !form.sex || !form.dateOfBirth || !form.activityLevel || !form.goal) {
+    if (!form.goal || !form.sex || !form.activityLevel || !form.age || !form.heightFeet || form.heightInches === "" || !form.weight) {
       notify({
         type: "error",
         title: "Missing fields",
-        description: "Fill basics and lifestyle first to auto-calculate targets.",
+        description: "Fill goal and About You first to auto-calculate targets.",
       });
       return;
     }
 
-    const heightInput = parseNumberOrNull(form.height);
+    const age = parseNumberOrNull(form.age, true);
+    const heightFeet = parseNumberOrNull(form.heightFeet, true);
+    const heightInches = parseNumberOrNull(form.heightInches);
     const weightInput = parseNumberOrNull(form.weight);
-    if (heightInput === null || heightInput <= 0 || weightInput === null || weightInput <= 0) {
-      notify({ type: "error", title: "Invalid measurements", description: "Height and weight must be positive." });
+
+    if (
+      age === null ||
+      age <= 0 ||
+      heightFeet === null ||
+      heightFeet < 0 ||
+      heightInches === null ||
+      heightInches < 0 ||
+      heightInches > 11 ||
+      weightInput === null ||
+      weightInput <= 0
+    ) {
+      notify({ type: "error", title: "Invalid measurements", description: "Please enter valid age, height, and weight." });
       return;
     }
 
-    const age = calculateAge(form.dateOfBirth);
-    if (age <= 0) {
-      notify({ type: "error", title: "Invalid date of birth", description: "Please enter a valid date of birth." });
-      return;
-    }
-
+    const heightTotalInches = heightFeet * 12 + heightInches;
     const weightKg = convertWeight(weightInput, "imperial", "metric");
-    const heightCm = convertHeight(heightInput, "imperial", "metric");
+    const heightCm = convertHeight(heightTotalInches, "imperial", "metric");
 
     const bmr = calculateBMR(weightKg, heightCm, age, form.sex);
     const tdee = calculateTDEE(bmr, form.activityLevel);
@@ -199,66 +228,49 @@ function OnboardingPage() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-5xl space-y-6">
-      <section className="space-y-2">
-        <h2 className="page-title">Setup Your Critter</h2>
-        <p className="text-sm text-muted-foreground">Simple setup. Using inches and pounds only.</p>
-      </section>
+    <div className="min-h-[100dvh] w-full bg-slate-50 px-4 py-6 sm:px-6">
+      <div className="mx-auto flex w-full max-w-2xl flex-col gap-8">
+        <div className="space-y-5">
+          <div className="flex items-center justify-between gap-4">
+            {canGoBack ? (
+              <Button type="button" variant="ghost" className="px-2 text-muted-foreground" onClick={goPreviousStep}>
+                Back
+              </Button>
+            ) : (
+              <div className="w-16" />
+            )}
+            <div className="w-full max-w-[260px]">
+              <StepProgress steps={STEP_LABELS} currentStep={currentStep} />
+            </div>
+            <div className="w-16" />
+          </div>
 
-      <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-        <Card>
-          <CardContent className="space-y-4 p-2">
-            <StepProgress steps={STEP_LABELS} currentStep={currentStep} />
+          <h1 className="text-center text-5xl font-black tracking-tight text-slate-800">{STEP_LABELS[currentStep]}</h1>
+        </div>
 
+        <Card className="rounded-[2rem] border-slate-200 p-2 sm:p-4">
+          <CardContent className="space-y-4 p-2 sm:p-3">
             {profileQuery.isLoading ? (
               <p className="text-sm text-muted-foreground">Loading profile...</p>
             ) : (
               <>
-                {currentStep === 0 ? <BasicsStep form={form} onChange={patchForm} /> : null}
-                {currentStep === 1 ? <LifestyleStep form={form} onChange={patchForm} /> : null}
-                {currentStep === 2 ? (
-                  <TargetsStep form={form} onChange={patchForm} onAutoCalculate={handleAutoCalculate} />
-                ) : null}
+                {currentStep === 0 ? <LifestyleStep form={form} onChange={patchForm} /> : null}
+                {currentStep === 1 ? <BasicsStep form={form} onChange={patchForm} /> : null}
+                {currentStep === 2 ? <TargetsStep form={form} onChange={patchForm} onAutoCalculate={handleAutoCalculate} /> : null}
 
                 {stepValidationError ? <p className="text-sm text-muted-foreground">{stepValidationError}</p> : null}
 
-                <div className="flex flex-wrap gap-2">
-                  {canGoBack ? (
-                    <Button type="button" variant="outline" onClick={goPreviousStep}>
-                      Back
-                    </Button>
-                  ) : null}
-
-                  {!isFinalStep ? (
-                    <Button type="button" effect="glow" onClick={goNextStep}>
-                      Next
-                    </Button>
-                  ) : (
-                    <Button type="button" effect="glow" onClick={handleFinish} disabled={saveMutation.isPending}>
-                      {saveMutation.isPending ? "Saving..." : "Finish Onboarding"}
-                    </Button>
-                  )}
-                </div>
+                <Button
+                  type="button"
+                  className="h-14 w-full rounded-[1.2rem] text-lg"
+                  effect="glow"
+                  onClick={isFinalStep ? handleFinish : goNextStep}
+                  disabled={!isCurrentStepValid || saveMutation.isPending}
+                >
+                  {isFinalStep ? (saveMutation.isPending ? "Saving..." : "Finish") : "Continue"}
+                </Button>
               </>
             )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="space-y-3 p-2">
-            <h3 className="section-title">Quick Summary</h3>
-            <div className="space-y-2">
-              <div className="rounded-[var(--radius-sm)] border border-border/75 bg-surface-2 px-3 py-2 text-sm text-muted-foreground">
-                Units: <span className="font-semibold text-foreground">Imperial (in / lbs)</span>
-              </div>
-              <div className="rounded-[var(--radius-sm)] border border-border/75 bg-surface-2 px-3 py-2 text-sm text-muted-foreground">
-                Goal: <span className="font-semibold text-foreground">{form.goal || "Not set"}</span>
-              </div>
-              <div className="rounded-[var(--radius-sm)] border border-border/75 bg-surface-2 px-3 py-2 text-sm text-muted-foreground">
-                Calories: <span className="font-semibold text-foreground">{form.calorieTarget || "-"}</span>
-              </div>
-            </div>
-            <Badge variant="primary">Step {currentStep + 1} of 3</Badge>
           </CardContent>
         </Card>
       </div>

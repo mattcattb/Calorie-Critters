@@ -1,10 +1,11 @@
-import type { UpsertProfileInput, UserProfile, UnitSystem, Sex, ActivityLevel, Goal } from "@calorie-critters/shared";
+import { calculateAge, type UpsertProfileInput, type UserProfile, type UnitSystem, type Sex, type ActivityLevel, type Goal } from "@calorie-critters/shared";
 
 export type ProfileFormState = {
-  height: string;
+  heightFeet: string;
+  heightInches: string;
   weight: string;
+  age: string;
   sex: Sex | "";
-  dateOfBirth: string;
   activityLevel: ActivityLevel | "";
   goal: Goal | "";
   calorieTarget: string;
@@ -15,10 +16,11 @@ export type ProfileFormState = {
 };
 
 export const DEFAULT_PROFILE_FORM: ProfileFormState = {
-  height: "",
+  heightFeet: "",
+  heightInches: "",
   weight: "",
+  age: "",
   sex: "",
-  dateOfBirth: "",
   activityLevel: "",
   goal: "",
   calorieTarget: "",
@@ -30,11 +32,20 @@ export const DEFAULT_PROFILE_FORM: ProfileFormState = {
 
 export function mapProfileToForm(profile: UserProfile | null): ProfileFormState {
   if (!profile) return DEFAULT_PROFILE_FORM;
+  const heightInchesTotal = profile.height ?? null;
+  const feet = heightInchesTotal === null ? "" : String(Math.floor(heightInchesTotal / 12));
+  let inchesValue = "";
+  if (heightInchesTotal !== null) {
+    const remainder = Math.round((heightInchesTotal % 12) * 10) / 10;
+    inchesValue = String(remainder);
+  }
+
   return {
-    height: profile.height === null ? "" : String(profile.height),
+    heightFeet: feet,
+    heightInches: inchesValue,
     weight: profile.weight === null ? "" : String(profile.weight),
+    age: profile.dateOfBirth ? String(Math.max(0, calculateAge(profile.dateOfBirth))) : "",
     sex: profile.sex ?? "",
-    dateOfBirth: profile.dateOfBirth ?? "",
     activityLevel: profile.activityLevel ?? "",
     goal: profile.goal ?? "",
     calorieTarget:
@@ -61,12 +72,27 @@ export function formatEnumLabel(value: string): string {
     .join(" ");
 }
 
+function deriveDateOfBirthFromAge(ageValue: string): string | null {
+  const age = parseNumberOrNull(ageValue, true);
+  if (age === null || age <= 0) return null;
+  const now = new Date();
+  const dob = new Date(now.getFullYear() - age, now.getMonth(), now.getDate());
+  return dob.toISOString().slice(0, 10);
+}
+
 export function toProfilePayload(form: ProfileFormState): UpsertProfileInput {
+  const feet = parseNumberOrNull(form.heightFeet, true);
+  const inches = parseNumberOrNull(form.heightInches);
+  const heightTotalInches =
+    feet !== null && feet >= 0 && inches !== null && inches >= 0
+      ? feet * 12 + inches
+      : null;
+
   return {
-    height: parseNumberOrNull(form.height),
+    height: heightTotalInches,
     weight: parseNumberOrNull(form.weight),
     sex: form.sex || null,
-    dateOfBirth: form.dateOfBirth || null,
+    dateOfBirth: deriveDateOfBirthFromAge(form.age),
     activityLevel: form.activityLevel || null,
     goal: form.goal || null,
     calorieTarget: parseNumberOrNull(form.calorieTarget, true),

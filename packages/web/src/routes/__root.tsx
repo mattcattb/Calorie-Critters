@@ -89,6 +89,7 @@ function RootLayoutContent() {
   const location = useLocation();
   const navigate = useNavigate();
   const { openLog } = useLogFoodModal();
+  const isOnboardingRoute = location.pathname === "/onboarding";
 
   const profileQuery = useQuery({
     queryKey: ["profile"],
@@ -103,7 +104,6 @@ function RootLayoutContent() {
 
     const pathname = location.pathname;
     const isAuthRoute = pathname === "/login" || pathname === "/signup";
-    const isOnboardingRoute = pathname === "/onboarding";
     const isComplete = isProfileOnboardingComplete(profileQuery.data);
 
     if (isAuthRoute) {
@@ -130,36 +130,38 @@ function RootLayoutContent() {
 
   return (
     <PetProvider>
-      <div className="mx-auto min-h-screen w-full max-w-[860px] px-3 py-4 sm:px-5 sm:py-5">
-        <header className="page-shell sticky top-3 z-40 mb-4 px-4 py-3 sm:px-5">
-          <div className="flex items-center justify-between gap-3">
-            <Link to="/" className="flex items-center gap-2">
-              <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-lg text-primary-foreground">
-                ☺
-              </span>
-              <span className="font-display text-xl font-black tracking-tight text-primary">CALORIE CRITTERS</span>
-            </Link>
-
-            {isPending ? null : session ? (
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" onClick={() => signOut()}>
-                  Sign out
-                </Button>
-              </div>
-            ) : (
-              <Link to="/login">
-                <Button variant="outline" size="sm">Sign in</Button>
+      <div className={isOnboardingRoute ? "min-h-screen w-full" : "mx-auto min-h-screen w-full max-w-[860px] px-3 py-4 sm:px-5 sm:py-5"}>
+        {isOnboardingRoute ? null : (
+          <header className="page-shell sticky top-3 z-40 mb-4 px-4 py-3 sm:px-5">
+            <div className="flex items-center justify-between gap-3">
+              <Link to="/" className="flex items-center gap-2">
+                <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-lg text-primary-foreground">
+                  ☺
+                </span>
+                <span className="font-display text-xl font-black tracking-tight text-primary">CALORIE CRITTERS</span>
               </Link>
-            )}
-          </div>
-        </header>
 
-        <main className={session ? "pb-32" : ""}>
+              {isPending ? null : session ? (
+                <div className="flex items-center gap-2">
+                  <Button variant="outline" size="sm" onClick={() => signOut()}>
+                    Sign out
+                  </Button>
+                </div>
+              ) : (
+                <Link to="/login">
+                  <Button variant="outline" size="sm">Sign in</Button>
+                </Link>
+              )}
+            </div>
+          </header>
+        )}
+
+        <main className={session && !isOnboardingRoute ? "pb-32" : ""}>
           <Outlet />
         </main>
       </div>
 
-      {session ? (
+      {session && !isOnboardingRoute ? (
         <div className="fixed inset-x-0 bottom-5 z-50 px-3 sm:px-5">
           <nav className="mx-auto flex w-full max-w-[560px] items-center justify-between rounded-[2.25rem] border border-indigo-100 bg-white/94 px-5 py-1.5 shadow-2xl backdrop-blur-xl">
             {NAV_ITEMS.slice(0, 2).map((item) => {
@@ -195,7 +197,7 @@ function RootLayoutContent() {
         </div>
       ) : null}
 
-      {session ? <LogFoodModal /> : null}
+      {session && !isOnboardingRoute ? <LogFoodModal /> : null}
     </PetProvider>
   );
 }

@@ -5,7 +5,7 @@ import { MEAL_TYPES, type DailySummary, type EntryWithFood } from "@calorie-crit
 import { Card, CardContent, Input } from "../components/ui";
 import { HistoryStatChip, MealSection } from "../components/history";
 import { PageHeader } from "../components/layout/page-header";
-import { apiFetch } from "../lib/api";
+import { honoClient } from "../lib/hono.client";
 import { useSession } from "../lib/auth";
 
 export const Route = createFileRoute("/history")({
@@ -24,13 +24,13 @@ function HistoryPage() {
 
   const entriesQuery = useQuery({
     queryKey: ["entries", selectedDate],
-    queryFn: () => apiFetch<EntryWithFood[]>(`/api/entries?date=${selectedDate}`),
+    queryFn: () => honoClient.entries.list<EntryWithFood[]>({ date: selectedDate }),
     enabled: canFetch,
   });
 
   const summaryQuery = useQuery({
     queryKey: ["summary", selectedDate],
-    queryFn: () => apiFetch<DailySummary>(`/api/entries/summary?date=${selectedDate}`),
+    queryFn: () => honoClient.entries.summary<DailySummary>(selectedDate),
     enabled: canFetch,
   });
 

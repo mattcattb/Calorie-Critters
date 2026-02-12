@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { UserProfile } from "@calorie-critters/shared";
 import { AppIcon, Button } from "../components/ui";
 import { useSession, signOut } from "../lib/auth";
-import { apiFetch } from "../lib/api";
+import { honoClient } from "../lib/hono.client";
 import { isProfileOnboardingComplete } from "../lib/onboarding";
 import { PetProvider } from "../pet";
 import { LogFoodModal } from "../log/log-food-modal";
@@ -93,7 +93,7 @@ function RootLayoutContent() {
 
   const profileQuery = useQuery({
     queryKey: ["profile"],
-    queryFn: () => apiFetch<UserProfile | null>("/api/profile"),
+    queryFn: () => honoClient.profile.get<UserProfile | null>(),
     enabled: Boolean(session && !isPending),
   });
 

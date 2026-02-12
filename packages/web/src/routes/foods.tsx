@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { CreateFoodItemInput, FoodItem, UpdateFoodItemInput } from "@calorie-critters/shared";
 import { Badge, Button, Card, CardContent, Input, Label, useToast } from "../components/ui";
 import { useSession } from "../lib/auth";
-import { apiFetch } from "../lib/api";
+import { honoClient } from "../lib/hono.client";
 
 export const Route = createFileRoute("/foods")({
   component: FoodsPage,
@@ -93,10 +93,7 @@ function FoodsPage() {
 
   const foodsQuery = useQuery({
     queryKey: ["foods", search],
-    queryFn: () => {
-      const searchQuery = search.trim() ? `?search=${encodeURIComponent(search.trim())}` : "";
-      return apiFetch<FoodItem[]>(`/api/foods${searchQuery}`);
-    },
+    queryFn: () => honoClient.foods.list<FoodItem[]>(search.trim() || undefined),
     enabled: Boolean(session && !isPending),
   });
 
@@ -108,10 +105,7 @@ function FoodsPage() {
 
   const createMutation = useMutation({
     mutationFn: (payload: CreateFoodItemInput) =>
-      apiFetch<FoodItem>("/api/foods", {
-        method: "POST",
-        body: JSON.stringify(payload),
-      }),
+      honoClient.foods.create<FoodItem>(payload),
     onSuccess: () => {
       invalidateFoodRelatedQueries();
       setForm(DEFAULT_FOOD_FORM);
@@ -125,10 +119,7 @@ function FoodsPage() {
 
   const updateMutation = useMutation({
     mutationFn: ({ id, payload }: { id: string; payload: UpdateFoodItemInput }) =>
-      apiFetch<FoodItem>(`/api/foods/${id}`, {
-        method: "PUT",
-        body: JSON.stringify(payload),
-      }),
+      honoClient.foods.update<FoodItem>(id, payload),
     onSuccess: () => {
       invalidateFoodRelatedQueries();
       setEditingFoodId(null);
@@ -143,9 +134,7 @@ function FoodsPage() {
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) =>
-      apiFetch<{ success: boolean }>(`/api/foods/${id}`, {
-        method: "DELETE",
-      }),
+      honoClient.foods.remove<{ success: boolean }>(id),
     onSuccess: () => {
       invalidateFoodRelatedQueries();
       notify({ type: "success", title: "Deleted", description: "Food removed." });
@@ -157,10 +146,7 @@ function FoodsPage() {
 
   const importMutation = useMutation({
     mutationFn: (payload: CreateFoodItemInput) =>
-      apiFetch<FoodItem>("/api/foods", {
-        method: "POST",
-        body: JSON.stringify(payload),
-      }),
+      honoClient.foods.create<FoodItem>(payload),
     onSuccess: () => {
       invalidateFoodRelatedQueries();
       notify({ type: "success", title: "Imported", description: "Added from Open Food Facts." });
@@ -180,9 +166,7 @@ function FoodsPage() {
   const offQuery = useQuery({
     queryKey: ["off-search", offDebouncedQuery],
     queryFn: () =>
-      apiFetch<OpenFoodFactsSearchResult>(
-        `/api/foods/open-food-facts/search?query=${encodeURIComponent(offDebouncedQuery)}&pageSize=6`,
-      ),
+      honoClient.foods.searchOpenFoodFacts<OpenFoodFactsSearchResult>(offDebouncedQuery, 1, 6),
     enabled: Boolean(
       session && !isPending && offDebouncedQuery.length >= 2 && offDebouncedQuery === offSearchInput.trim(),
     ),

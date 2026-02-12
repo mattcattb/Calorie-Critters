@@ -11,7 +11,7 @@ import type {
   RecordPetEventInput,
   UserPetBundle,
 } from "@calorie-critters/shared";
-import { apiFetch } from "../lib/api";
+import { honoClient } from "../lib/hono.client";
 import { useSession } from "../lib/auth";
 
 type PetContextValue = {
@@ -37,17 +37,14 @@ export function PetProvider({ children }: { children: ReactNode }) {
 
   const petQuery = useQuery({
     queryKey: ["pet", "me"],
-    queryFn: () => apiFetch<UserPetBundle>("/api/pets/me"),
+    queryFn: () => honoClient.pets.me<UserPetBundle>(),
     enabled,
     staleTime: 30_000,
   });
 
   const updateMutation = useMutation({
     mutationFn: (input: UpdateUserPetInput) =>
-      apiFetch<UserPetBundle>("/api/pets/me", {
-        method: "PATCH",
-        body: JSON.stringify(input),
-      }),
+      honoClient.pets.updateMe<UserPetBundle>(input),
     onSuccess: (bundle) => {
       queryClient.setQueryData(["pet", "me"], bundle);
     },
@@ -55,10 +52,7 @@ export function PetProvider({ children }: { children: ReactNode }) {
 
   const eventMutation = useMutation({
     mutationFn: (input: RecordPetEventInput) =>
-      apiFetch<UserPetBundle>("/api/pets/me/events", {
-        method: "POST",
-        body: JSON.stringify(input),
-      }),
+      honoClient.pets.recordEvent<UserPetBundle>(input),
     onSuccess: (bundle) => {
       queryClient.setQueryData(["pet", "me"], bundle);
     },

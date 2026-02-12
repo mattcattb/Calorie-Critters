@@ -14,7 +14,7 @@ import {
 } from "@calorie-critters/shared";
 import { AppIcon, Button, Card, CardContent, Input, useToast } from "../components/ui";
 import { DailyGoalsOverview } from "../components/goals";
-import { apiFetch } from "../lib/api";
+import { honoClient } from "../lib/hono.client";
 import { useSession } from "../lib/auth";
 
 export const Route = createFileRoute("/goals")({
@@ -67,14 +67,14 @@ function GoalsPage() {
 
   const profileQuery = useQuery({
     queryKey: ["profile"],
-    queryFn: () => apiFetch<UserProfile | null>("/api/profile"),
+    queryFn: () => honoClient.profile.get<UserProfile | null>(),
     enabled: Boolean(session && !isPending),
   });
 
   const today = new Date().toISOString().split("T")[0];
   const summaryQuery = useQuery({
     queryKey: ["summary", today],
-    queryFn: () => apiFetch<DailySummary>(`/api/entries/summary?date=${today}`),
+    queryFn: () => honoClient.entries.summary<DailySummary>(today),
     enabled: Boolean(session && !isPending),
   });
 
@@ -86,10 +86,7 @@ function GoalsPage() {
 
   const saveMutation = useMutation({
     mutationFn: (payload: UpsertProfileInput) =>
-      apiFetch<UserProfile>("/api/profile", {
-        method: "PUT",
-        body: JSON.stringify(payload),
-      }),
+      honoClient.profile.update<UserProfile>(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["profile"] });
       queryClient.invalidateQueries({ queryKey: ["summary"] });

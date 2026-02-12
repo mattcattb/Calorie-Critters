@@ -12,7 +12,7 @@ import {
 } from "@calorie-critters/shared";
 import { Button, Card, CardContent, useToast } from "../components/ui";
 import { useSession } from "../lib/auth";
-import { apiFetch } from "../lib/api";
+import { honoClient } from "../lib/hono.client";
 import { isProfileOnboardingComplete } from "../lib/onboarding";
 import {
   BasicsStep,
@@ -95,7 +95,7 @@ function OnboardingPage() {
 
   const profileQuery = useQuery({
     queryKey: ["profile"],
-    queryFn: () => apiFetch<UserProfile | null>("/api/profile"),
+    queryFn: () => honoClient.profile.get<UserProfile | null>(),
     enabled: Boolean(session && !isPending),
   });
 
@@ -130,10 +130,7 @@ function OnboardingPage() {
 
   const saveMutation = useMutation({
     mutationFn: (payload: UpsertProfileInput) =>
-      apiFetch<UserProfile>("/api/profile", {
-        method: "PUT",
-        body: JSON.stringify(payload),
-      }),
+      honoClient.profile.update<UserProfile>(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["profile"] });
       notify({ type: "success", title: "Onboarding complete", description: "Your profile is ready." });

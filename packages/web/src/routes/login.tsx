@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Button, Card, CardContent, CardHeader, CardTitle, Input, Label, useToast } from "../components/ui";
 import { signIn } from "../lib/auth";
-import { apiFetch } from "../lib/api";
+import { honoClient } from "../lib/hono.client";
 import { isProfileOnboardingComplete } from "../lib/onboarding";
 import type { UserProfile } from "@calorie-critters/shared";
 
@@ -49,7 +49,7 @@ function LoginPage() {
       }
 
       try {
-        const profile = await apiFetch<UserProfile | null>("/api/profile");
+        const profile = await honoClient.profile.get<UserProfile | null>();
         if (isProfileOnboardingComplete(profile)) {
           navigate({ to: "/dashboard" });
         } else {

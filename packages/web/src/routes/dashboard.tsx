@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { DailySummary, UserProfile } from "@calorie-critters/shared";
 import { AppIcon, Button, Card, CardContent } from "../components/ui";
-import { apiFetch } from "../lib/api";
+import { honoClient } from "../lib/hono.client";
 import { useSession } from "../lib/auth";
 import { PetAvatar, usePet } from "../pet";
 import { useLogFoodModal } from "../log/log-food-modal-context";
@@ -88,13 +88,13 @@ function DashboardPage() {
 
   const profileQuery = useQuery({
     queryKey: ["profile"],
-    queryFn: () => apiFetch<UserProfile | null>("/api/profile"),
+    queryFn: () => honoClient.profile.get<UserProfile | null>(),
     enabled: canFetch,
   });
 
   const summaryQuery = useQuery({
     queryKey: ["summary", today],
-    queryFn: () => apiFetch<DailySummary>(`/api/entries/summary?date=${today}`),
+    queryFn: () => honoClient.entries.summary<DailySummary>(today),
     enabled: canFetch,
   });
 

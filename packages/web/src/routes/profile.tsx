@@ -30,7 +30,7 @@ import {
   useToast,
 } from "../components/ui";
 import { useSession } from "../lib/auth";
-import { apiFetch } from "../lib/api";
+import { honoClient } from "../lib/hono.client";
 
 export const Route = createFileRoute("/profile")({
   component: ProfilePage,
@@ -120,7 +120,7 @@ function ProfilePage() {
 
   const profileQuery = useQuery({
     queryKey: ["profile"],
-    queryFn: () => apiFetch<UserProfile | null>("/api/profile"),
+    queryFn: () => honoClient.profile.get<UserProfile | null>(),
     enabled: Boolean(session && !isPending),
   });
 
@@ -132,10 +132,7 @@ function ProfilePage() {
 
   const saveMutation = useMutation({
     mutationFn: (payload: UpsertProfileInput) =>
-      apiFetch<UserProfile>("/api/profile", {
-        method: "PUT",
-        body: JSON.stringify(payload),
-      }),
+      honoClient.profile.update<UserProfile>(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["profile"] });
       notify({

@@ -16,7 +16,7 @@ import {
   Input,
   useToast,
 } from "../components/ui";
-import { apiFetch } from "../lib/api";
+import { honoClient } from "../lib/hono.client";
 import { useSession } from "../lib/auth";
 import { useLogFoodModal } from "./log-food-modal-context";
 
@@ -94,31 +94,26 @@ export function LogFoodModal() {
 
   const foodsQuery = useQuery({
     queryKey: ["foods", debouncedSearch],
-    queryFn: () => {
-      const searchQuery = debouncedSearch ? `?search=${encodeURIComponent(debouncedSearch)}` : "";
-      return apiFetch<FoodItem[]>(`/api/foods${searchQuery}`);
-    },
+    queryFn: () => honoClient.foods.list<FoodItem[]>(debouncedSearch || undefined),
     enabled: canFetch,
   });
 
   const todayEntriesQuery = useQuery({
     queryKey: ["entries", today],
-    queryFn: () => apiFetch<EntryWithFood[]>(`/api/entries?date=${today}`),
+    queryFn: () => honoClient.entries.list<EntryWithFood[]>({ date: today }),
     enabled: canFetch,
   });
 
   const yesterdayEntriesQuery = useQuery({
     queryKey: ["entries", isoYesterday()],
-    queryFn: () => apiFetch<EntryWithFood[]>(`/api/entries?date=${isoYesterday()}`),
+    queryFn: () => honoClient.entries.list<EntryWithFood[]>({ date: isoYesterday() }),
     enabled: canFetch,
   });
 
   const openFoodFactsQuery = useQuery({
     queryKey: ["log-modal-off-search", debouncedSearch],
     queryFn: () =>
-      apiFetch<OpenFoodFactsSearchResult>(
-        `/api/foods/open-food-facts/search?query=${encodeURIComponent(debouncedSearch)}&pageSize=6`,
-      ),
+      honoClient.foods.searchOpenFoodFacts<OpenFoodFactsSearchResult>(debouncedSearch, 1, 6),
     enabled: canFetch && debouncedSearch.length >= 2,
     staleTime: 60_000,
   });
@@ -140,10 +135,7 @@ export function LogFoodModal() {
           carbs: recommendation.food.carbs,
           fat: recommendation.food.fat,
         };
-        const createdFood = await apiFetch<FoodItem>("/api/foods", {
-          method: "POST",
-          body: JSON.stringify(payload),
-        });
+        const createdFood = await honoClient.foods.create<FoodItem>(payload);
         foodItemId = createdFood.id;
       }
 
@@ -155,10 +147,7 @@ export function LogFoodModal() {
         notes: null,
       };
 
-      return apiFetch<EntryWithFood["entry"]>("/api/entries", {
-        method: "POST",
-        body: JSON.stringify(payload),
-      });
+      return honoClient.entries.create<EntryWithFood["entry"]>(payload);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["foods"] });

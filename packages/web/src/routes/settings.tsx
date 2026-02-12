@@ -2,7 +2,7 @@ import { createFileRoute, Link, Navigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { UnitSystem, UpsertProfileInput, UserProfile } from "@calorie-critters/shared";
 import { Button, Card, CardContent, Input, Label, Select, useToast } from "../components/ui";
-import { apiFetch } from "../lib/api";
+import { honoClient } from "../lib/hono.client";
 import { signOut, useSession } from "../lib/auth";
 
 export const Route = createFileRoute("/settings")({
@@ -32,16 +32,13 @@ function SettingsPage() {
 
   const profileQuery = useQuery({
     queryKey: ["profile"],
-    queryFn: () => apiFetch<UserProfile | null>("/api/profile"),
+    queryFn: () => honoClient.profile.get<UserProfile | null>(),
     enabled: Boolean(session && !isPending),
   });
 
   const saveMutation = useMutation({
     mutationFn: (payload: UpsertProfileInput) =>
-      apiFetch<UserProfile>("/api/profile", {
-        method: "PUT",
-        body: JSON.stringify(payload),
-      }),
+      honoClient.profile.update<UserProfile>(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["profile"] });
       notify({ type: "success", title: "Saved", description: "Settings updated." });

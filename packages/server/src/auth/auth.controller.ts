@@ -17,7 +17,7 @@ import {auth} from "../lib/auth";
  */
 
 export const addAuthController = (app: Hono<any>) => {
-  app.on(["POST", "GET"], "/api/auth/*", (c) => {
+  app.on(["POST", "GET", "OPTIONS"], "/api/auth/*", (c) => {
     return auth.handler(c.req.raw);
   });
 };

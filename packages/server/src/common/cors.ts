@@ -2,10 +2,20 @@ import { cors } from "hono/cors";
 
 import {appEnv} from "./env";
 
-const ALLOWED_ORIGINS = appEnv.CORS_ORIGINS?.split(",") || [
-  "http://localhost:5173",
-  "http://localhost:3000",
-];
+const DEFAULT_ALLOWED_ORIGINS = ["http://localhost:5173", "http://localhost:3000"];
+
+const parseOrigins = (origins: string | undefined): string[] => {
+  if (!origins) return [];
+  return origins
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+};
+
+const configuredOrigins = parseOrigins(appEnv.CORS_ORIGINS);
+
+export const ALLOWED_ORIGINS =
+  configuredOrigins.length > 0 ? configuredOrigins : DEFAULT_ALLOWED_ORIGINS;
 
 export const corsMiddleware = cors({
   origin: ALLOWED_ORIGINS,

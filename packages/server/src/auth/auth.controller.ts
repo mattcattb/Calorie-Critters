@@ -1,4 +1,5 @@
 import {createRouter} from "../common/hono";
+import {logger} from "../common/logger";
 import {auth} from "../lib/auth";
 
 /**
@@ -15,7 +16,41 @@ import {auth} from "../lib/auth";
  * - And more depending on enabled features
  */
 export const authController = createRouter().all("/*", (c) => {
-  return auth.handler(c.req.raw);
+  const requestMeta = {
+    method: c.req.method,
+    path: c.req.path,
+    origin: c.req.header("origin") ?? null,
+    host: c.req.header("host") ?? null,
+    forwardedHost: c.req.header("x-forwarded-host") ?? null,
+    forwardedProto: c.req.header("x-forwarded-proto") ?? null,
+  };
+
+  return auth
+    .handler(c.req.raw)
+    .then((response) => {
+      if (response.status >= 400) {
+        logger.warn(
+          {
+            auth: {
+              ...requestMeta,
+              status: response.status,
+            },
+          },
+          "Auth request returned non-2xx status",
+        );
+      }
+      return response;
+    })
+    .catch((error) => {
+      logger.error(
+        {
+          auth: requestMeta,
+          err: error,
+        },
+        "Auth request failed",
+      );
+      throw error;
+    });
 });
 
 // Re-export auth for use in other modules

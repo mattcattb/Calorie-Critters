@@ -9,6 +9,7 @@ import {authMiddleware} from "./auth/auth.middleware";
 import {profileController} from "./profile/profile.controller";
 import {foodsController} from "./foods/foods.controller";
 import {entriesController} from "./entries/entries.controller";
+import {petsController} from "./pets/pets.controller";
 
 const app = createRouter();
 addGlobalMiddlewares(app);
@@ -20,7 +21,8 @@ const api = createRouter()
   .use("*", authMiddleware)
   .route("/profile", profileController)
   .route("/foods", foodsController)
-  .route("/entries", entriesController);
+  .route("/entries", entriesController)
+  .route("/pets", petsController);
 
 app.route("/api", api);
 

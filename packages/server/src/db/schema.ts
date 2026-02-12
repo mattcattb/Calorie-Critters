@@ -131,3 +131,35 @@ export const dailySummary = pgTable("daily_summary", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
+
+export const userPet = pgTable("user_pet", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: text("user_id")
+    .notNull()
+    .unique()
+    .references(() => user.id),
+  templateId: text("template_id").notNull().default("sprout_fox"),
+  name: text("name").notNull().default("Sprout"),
+  stage: text("stage").notNull().default("baby"),
+  mood: text("mood").notNull().default("curious"),
+  energy: integer("energy").notNull().default(70),
+  affection: integer("affection").notNull().default(50),
+  lastInteractedAt: timestamp("last_interacted_at"),
+  lastSeenAt: timestamp("last_seen_at"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const petEvent = pgTable("pet_event", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id),
+  userPetId: uuid("user_pet_id")
+    .notNull()
+    .references(() => userPet.id),
+  type: text("type").notNull(),
+  route: text("route"),
+  payload: text("payload"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});

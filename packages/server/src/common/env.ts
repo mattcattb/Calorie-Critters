@@ -26,6 +26,36 @@ const appEnvSchema = z.object({
   CORS_ORIGINS: z.string().optional(),
 
   NODE_ENV: z.string().optional(),
+  OPEN_FOOD_FACTS_BASE_URL: z
+    .string()
+    .url()
+    .default("https://world.openfoodfacts.org"),
+  OPEN_FOOD_FACTS_USER_AGENT: z.string().optional(),
+  OPEN_FOOD_FACTS_TIMEOUT_MS: z.preprocess((value) => {
+    if (typeof value === "string" && value.trim() !== "") {
+      return Number(value);
+    }
+    return value;
+  }, z.number().int().positive().default(8000)),
+  OPEN_FOOD_FACTS_CACHE_TTL_MS: z.preprocess((value) => {
+    if (typeof value === "string" && value.trim() !== "") {
+      return Number(value);
+    }
+    return value;
+  }, z.number().int().positive().default(86400000)),
+  OPEN_FOOD_FACTS_CACHE_MAX_ENTRIES: z.preprocess((value) => {
+    if (typeof value === "string" && value.trim() !== "") {
+      return Number(value);
+    }
+    return value;
+  }, z.number().int().positive().default(500)),
+  REDIS_URL: z.string().url().optional(),
+  REDIS_CONNECT_TIMEOUT_MS: z.preprocess((value) => {
+    if (typeof value === "string" && value.trim() !== "") {
+      return Number(value);
+    }
+    return value;
+  }, z.number().int().positive().default(1000)),
 
   PORT: z.preprocess((value) => {
     if (typeof value === "string" && value.trim() !== "") {

@@ -16,3 +16,14 @@ export {
   type CreateEntryInput,
   type UpdateEntryInput,
 } from "./entry.schema";
+
+export {
+  updateUserPetSchema,
+  recordPetEventSchema,
+  petTemplateIdSchema,
+  petStageSchema,
+  petMoodSchema,
+  petInteractionTypeSchema,
+  type UpdateUserPetInput,
+  type RecordPetEventInput,
+} from "./pet.schema";

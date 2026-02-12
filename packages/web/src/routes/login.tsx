@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Button, Card, CardContent, CardHeader, CardTitle, Input, Label } from "../components/ui";
+import { Button, Card, CardContent, CardHeader, CardTitle, Input, Label, useToast } from "../components/ui";
 import { signIn } from "../lib/auth";
 import { apiFetch } from "../lib/api";
 import { isProfileOnboardingComplete } from "../lib/onboarding";
@@ -12,6 +12,7 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const navigate = useNavigate();
+  const { notify } = useToast();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -22,15 +23,31 @@ function LoginPage() {
     setError("");
     setLoading(true);
 
-    const result = await signIn.email({
-      email,
-      password,
-    });
+    try {
+      const result = await signIn.email({
+        email,
+        password,
+      });
 
-    if (result.error) {
-      setError(result.error.message ?? "Login failed");
-      setLoading(false);
-    } else {
+      if (result.error) {
+        const message = result.error.message ?? "Login failed";
+        console.error("Better Auth sign-in failed", {
+          message: result.error.message ?? null,
+          status: "status" in result.error ? result.error.status : null,
+          code: "code" in result.error ? result.error.code : null,
+          origin: window.location.origin,
+          apiBaseUrl: import.meta.env.VITE_API_URL || "http://localhost:3000",
+        });
+        setError(message);
+        notify({
+          type: "error",
+          title: "Sign in failed",
+          description: message,
+        });
+        setLoading(false);
+        return;
+      }
+
       try {
         const profile = await apiFetch<UserProfile | null>("/api/profile");
         if (isProfileOnboardingComplete(profile)) {
@@ -41,6 +58,21 @@ function LoginPage() {
       } catch {
         navigate({ to: "/onboarding" });
       }
+    } catch (authError) {
+      const message =
+        authError instanceof Error ? authError.message : "Unable to reach auth service";
+      console.error("Better Auth sign-in request threw", {
+        error: authError,
+        origin: window.location.origin,
+        apiBaseUrl: import.meta.env.VITE_API_URL || "http://localhost:3000",
+      });
+      setError(message);
+      notify({
+        type: "error",
+        title: "Sign in failed",
+        description: message,
+      });
+      setLoading(false);
     }
   };
 

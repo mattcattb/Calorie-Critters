@@ -22,6 +22,11 @@ export default defineConfig({
       ]),
     ).filter(Boolean),
   },
+  preview: {
+    host: true,
+    port: Number(process.env.PORT) || 8080,
+  },
+
   plugins: [
     tailwindVite(),
     TanStackRouterVite({target: "react", autoCodeSplitting: true}),

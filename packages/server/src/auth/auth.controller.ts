@@ -1,3 +1,4 @@
+import type {Hono} from "hono";
 import {createRouter} from "../common/hono";
 import {auth} from "../lib/auth";
 
@@ -14,9 +15,9 @@ import {auth} from "../lib/auth";
  * - POST /api/auth/reset-password
  * - And more depending on enabled features
  */
-export const authController = createRouter().on(["GET", "POST"], "/*", (c) => {
-  return auth.handler(c.req.raw);
-});
 
-// Re-export auth for use in other modules
-export {auth};
+export const addAuthController = (app: Hono<any>) => {
+  app.on(["POST", "GET", "OPTIONS"], "/api/auth/*", (c) => {
+    return auth.handler(c.req.raw);
+  });
+};

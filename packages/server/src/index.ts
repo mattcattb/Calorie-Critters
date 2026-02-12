@@ -2,9 +2,13 @@ import {appEnv} from "./common/env";
 import {logger} from "./common/logger";
 import {addErrorHandling} from "./common/errors";
 import {addGlobalMiddlewares, createRouter} from "./common/hono";
-import {ALLOWED_ORIGINS, TRUSTED_ORIGINS, isCorsAllowAllEnabled} from "./common/origins";
+import {
+  ALLOWED_ORIGINS,
+  TRUSTED_ORIGINS,
+  isCorsAllowAllEnabled,
+} from "./common/origins";
 
-import {authController} from "./auth/auth.controller";
+import {addAuthController} from "./auth/auth.controller";
 import {authMiddleware} from "./auth/auth.middleware";
 
 import {profileController} from "./profile/profile.controller";
@@ -16,15 +20,7 @@ const app = createRouter();
 addGlobalMiddlewares(app);
 addErrorHandling(app);
 
-process.on("unhandledRejection", (reason) => {
-  logger.error({reason}, "Unhandled promise rejection");
-});
-
-process.on("uncaughtException", (error) => {
-  logger.fatal({err: error}, "Uncaught exception");
-});
-
-app.route("/api/auth", authController);
+addAuthController(app);
 
 const api = createRouter()
   .use("*", authMiddleware)

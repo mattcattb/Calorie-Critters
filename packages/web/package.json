@@ -7,7 +7,7 @@
     "dev": "vite --port 5173",
     "build": "vite build && tsc --noEmit",
     "preview": "vite preview",
-    "start": "vite --port 8080"
+    "start": "vite --host 0.0.0.0 --strictPort --port ${PORT:-8080}"
   },
   "dependencies": {
     "@base-ui-components/react": "^1.0.0-rc.0",

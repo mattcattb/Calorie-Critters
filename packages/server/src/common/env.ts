@@ -24,6 +24,15 @@ const appEnvSchema = z.object({
 
   LOG_LEVEL: z.string().optional(),
   CORS_ORIGINS: z.string().optional(),
+  CORS_ALLOW_ALL: z.preprocess((value) => {
+    if (typeof value === "string") {
+      const normalized = value.trim().toLowerCase();
+      if (normalized === "true") return true;
+      if (normalized === "false") return false;
+    }
+    return value;
+  }, z.boolean().default(false)),
+  BETTER_AUTH_TRUSTED_ORIGINS: z.string().optional(),
 
   NODE_ENV: z.string().optional(),
   OPEN_FOOD_FACTS_BASE_URL: z
@@ -64,4 +73,14 @@ const appEnvSchema = z.object({
     return value;
   }, z.number().int().positive().default(3000)),
 });
-export const appEnv = appEnvSchema.parse(process.env);
+const parsedEnv = appEnvSchema.safeParse(process.env);
+
+if (!parsedEnv.success) {
+  console.error(
+    "Environment validation failed:",
+    JSON.stringify(parsedEnv.error.flatten(), null, 2),
+  );
+  throw new Error("Invalid environment configuration");
+}
+
+export const appEnv = parsedEnv.data;

@@ -3,11 +3,11 @@ import {drizzleAdapter} from "better-auth/adapters/drizzle";
 import {db} from "../db";
 import * as schema from "../db/schema";
 import {appEnv} from "../common/env";
-import {ALLOWED_ORIGINS} from "../common/cors";
+import {TRUSTED_ORIGINS} from "../common/origins";
 
 export const auth = betterAuth({
   baseURL: appEnv.BETTER_AUTH_URL,
-  trustedOrigins: ALLOWED_ORIGINS,
+  trustedOrigins: TRUSTED_ORIGINS,
   database: drizzleAdapter(db, {
     provider: "pg",
     schema: {

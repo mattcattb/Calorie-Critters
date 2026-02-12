@@ -2,7 +2,7 @@ import {appEnv} from "./common/env";
 import {logger} from "./common/logger";
 import {addErrorHandling} from "./common/errors";
 import {addGlobalMiddlewares, createRouter} from "./common/hono";
-import {ALLOWED_ORIGINS} from "./common/cors";
+import {ALLOWED_ORIGINS, TRUSTED_ORIGINS, isCorsAllowAllEnabled} from "./common/origins";
 
 import {authController} from "./auth/auth.controller";
 import {authMiddleware} from "./auth/auth.middleware";
@@ -63,7 +63,9 @@ logger.info(
     port,
     nodeEnv: appEnv.NODE_ENV ?? null,
     betterAuthUrl: appEnv.BETTER_AUTH_URL,
+    corsAllowAll: isCorsAllowAllEnabled,
     allowedCorsOrigins: ALLOWED_ORIGINS,
+    betterAuthTrustedOrigins: TRUSTED_ORIGINS,
   },
   "Server configuration loaded",
 );

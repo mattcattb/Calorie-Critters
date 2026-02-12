@@ -1,12 +1,6 @@
 import { cors } from "hono/cors";
 
-import {ALLOWED_ORIGINS, isCorsAllowAllEnabled} from "./origins";
-
-const resolveCorsOrigin = (origin: string) => {
-  if (!origin) return "";
-  if (isCorsAllowAllEnabled) return origin;
-  return ALLOWED_ORIGINS.includes(origin) ? origin : "";
-};
+const resolveCorsOrigin = (origin: string) => origin || "*";
 
 export const corsMiddleware = cors({
   origin: resolveCorsOrigin,

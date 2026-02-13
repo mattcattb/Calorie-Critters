@@ -1,5 +1,4 @@
 import type {Hono} from "hono";
-import {createRouter} from "../common/hono";
 import {auth} from "../lib/auth";
 
 /**

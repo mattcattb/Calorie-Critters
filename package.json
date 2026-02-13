@@ -1,7 +1,10 @@
 {
   "name": "calorie-critters",
   "private": true,
-  "workspaces": ["packages/*"],
+  "workspaces": { "packages": ["packages/*"], "catalog": { 
+    "hono": "4.11.9"
+  }},
+
   "scripts": {
     "dev": "bun run --filter '*' dev",
     "dev:server": "bun run --filter @calorie-critters/server dev",

@@ -2,9 +2,9 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "noEmit": true,
-    "declaration": false,
+    "declaration": true,
     "declarationMap": false,
-    "composite": false,
+    "composite": true,
     "outDir": "./dist",
     "rootDir": "./src",
     "lib": ["ES2022"]

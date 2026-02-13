@@ -1,6 +1,6 @@
 import { and, between, desc, eq, sql } from "drizzle-orm";
 import { db } from "../db";
-import { dailySummary, foodEntry, foodItem } from "../db/schema";
+import { foodEntry, foodItem } from "../db/schema";
 import type { CreateEntryInput, UpdateEntryInput } from "./entries.schema";
 
 export const listEntries = async (

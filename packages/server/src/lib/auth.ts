@@ -5,9 +5,19 @@ import * as schema from "../db/schema";
 import {appEnv} from "../common/env";
 import {TRUSTED_ORIGINS} from "../common/origins";
 
+const isProduction = appEnv.NODE_ENV === "production";
+
 export const auth = betterAuth({
   baseURL: appEnv.BETTER_AUTH_URL,
   trustedOrigins: TRUSTED_ORIGINS,
+  advanced: {
+    defaultCookieAttributes: {
+      // Railway web and API run on different origins, so production requests
+      // are cross-site and need SameSite=None to carry the session cookie.
+      sameSite: isProduction ? "none" : "lax",
+      secure: isProduction,
+    },
+  },
   database: drizzleAdapter(db, {
     provider: "pg",
     schema: {

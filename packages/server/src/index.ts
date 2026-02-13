@@ -43,5 +43,6 @@ logger.info(
 
 export default {
   port,
+
   fetch: app.fetch,
 };

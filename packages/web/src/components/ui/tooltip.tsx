@@ -1,12 +1,36 @@
 import * as React from "react";
-import { Tooltip as BaseTooltip } from "@base-ui-components/react/tooltip";
+import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 import { cn } from "../../lib/cn";
 
-type TooltipProps = Omit<BaseTooltip.Root.Props, "children"> & {
-  content: React.ComponentProps<typeof BaseTooltip.Popup>["children"];
-  children: React.ComponentProps<typeof BaseTooltip.Trigger>["children"];
-  align?: BaseTooltip.Positioner.Props["align"];
-  side?: BaseTooltip.Positioner.Props["side"];
+const TooltipProvider = TooltipPrimitive.Provider;
+const TooltipRoot = TooltipPrimitive.Root;
+const TooltipTrigger = TooltipPrimitive.Trigger;
+
+const TooltipContent = React.forwardRef<
+  React.ElementRef<typeof TooltipPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>
+>(({ className, sideOffset = 4, ...props }, ref) => (
+  <TooltipPrimitive.Portal>
+    <TooltipPrimitive.Content
+      ref={ref}
+      sideOffset={sideOffset}
+      className={cn(
+        "z-50 overflow-hidden rounded-md border border-border bg-surface-elevated px-3 py-2 text-xs text-foreground shadow-lg",
+        "animate-in fade-in-0 zoom-in-95",
+        className,
+      )}
+      {...props}
+    />
+  </TooltipPrimitive.Portal>
+));
+
+TooltipContent.displayName = TooltipPrimitive.Content.displayName;
+
+type TooltipProps = React.ComponentPropsWithoutRef<typeof TooltipRoot> & {
+  content: React.ReactNode;
+  children: React.ReactNode;
+  align?: React.ComponentPropsWithoutRef<typeof TooltipContent>["align"];
+  side?: React.ComponentPropsWithoutRef<typeof TooltipContent>["side"];
 };
 
 export function Tooltip({
@@ -16,23 +40,22 @@ export function Tooltip({
   side = "top",
   ...props
 }: TooltipProps) {
+  const trigger = React.isValidElement(children) ? (
+    <TooltipTrigger asChild>{children}</TooltipTrigger>
+  ) : (
+    <TooltipTrigger>{children}</TooltipTrigger>
+  );
+
   return (
-    <BaseTooltip.Provider>
-      <BaseTooltip.Root {...props}>
-        <BaseTooltip.Trigger>{children}</BaseTooltip.Trigger>
-        <BaseTooltip.Portal>
-          <BaseTooltip.Positioner align={align} side={side} className="z-50">
-            <BaseTooltip.Popup
-              className={cn(
-                "rounded-xl border border-border bg-surface-elevated px-3 py-2 text-xs font-semibold text-foreground shadow-[0_10px_24px_hsl(336_42%_40%/0.2)]"
-              )}
-            >
-              <BaseTooltip.Arrow className="fill-surface-elevated" />
-              {content}
-            </BaseTooltip.Popup>
-          </BaseTooltip.Positioner>
-        </BaseTooltip.Portal>
-      </BaseTooltip.Root>
-    </BaseTooltip.Provider>
+    <TooltipProvider>
+      <TooltipRoot {...props}>
+        {trigger}
+        <TooltipContent align={align} side={side}>
+          {content}
+        </TooltipContent>
+      </TooltipRoot>
+    </TooltipProvider>
   );
 }
+
+export { TooltipContent, TooltipProvider, TooltipRoot, TooltipTrigger };

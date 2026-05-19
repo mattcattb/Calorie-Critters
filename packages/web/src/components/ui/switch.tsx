@@ -1,31 +1,47 @@
-import { Switch as BaseSwitch } from "@base-ui-components/react/switch";
+import * as React from "react";
+import * as SwitchPrimitive from "@radix-ui/react-switch";
 import { cn } from "../../lib/cn";
 
-export type SwitchProps = BaseSwitch.Root.Props & {
+export type SwitchProps = React.ComponentPropsWithoutRef<
+  typeof SwitchPrimitive.Root
+> & {
   label?: string;
 };
 
-export function Switch({ className, label, ...props }: SwitchProps) {
+export const Switch = React.forwardRef<
+  React.ElementRef<typeof SwitchPrimitive.Root>,
+  SwitchProps
+>(({ className, label, ...props }, ref) => {
+  const control = (
+    <SwitchPrimitive.Root
+      ref={ref}
+      className={cn(
+        "relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border border-border bg-muted shadow-[inset_0_1px_2px_hsl(336_35%_40%/0.16)]",
+        "transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+        "disabled:cursor-not-allowed disabled:opacity-60 data-[state=checked]:border-primary data-[state=checked]:bg-primary",
+        className,
+      )}
+      {...props}
+    >
+      <SwitchPrimitive.Thumb
+        className={cn(
+          "block h-4 w-4 translate-x-1 rounded-full bg-foreground shadow-[0_1px_2px_hsl(336_36%_28%/0.28)] transition",
+          "data-[state=checked]:translate-x-6 data-[state=checked]:bg-primary-foreground",
+        )}
+      />
+    </SwitchPrimitive.Root>
+  );
+
+  if (!label) {
+    return control;
+  }
+
   return (
     <label className="inline-flex items-center gap-3 text-sm font-semibold text-foreground/90">
-      <BaseSwitch.Root
-        className={cn(
-          "relative inline-flex h-6 w-11 items-center rounded-full border border-border bg-muted shadow-[inset_0_1px_2px_hsl(336_35%_40%/0.16)]",
-          "transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-          "data-[checked]:bg-primary data-[checked]:border-primary",
-          "disabled:cursor-not-allowed disabled:opacity-60",
-          className
-        )}
-        {...props}
-      >
-        <BaseSwitch.Thumb
-          className={cn(
-            "inline-block h-4 w-4 translate-x-1 rounded-full bg-foreground shadow-[0_1px_2px_hsl(336_36%_28%/0.28)]",
-            "transition data-[checked]:translate-x-6 data-[checked]:bg-primary-foreground"
-          )}
-        />
-      </BaseSwitch.Root>
-      {label ? <span>{label}</span> : null}
+      {control}
+      <span>{label}</span>
     </label>
   );
-}
+});
+
+Switch.displayName = SwitchPrimitive.Root.displayName;

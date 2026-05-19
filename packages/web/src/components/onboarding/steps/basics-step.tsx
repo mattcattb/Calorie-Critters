@@ -1,5 +1,5 @@
 import { ACTIVITY_LEVELS, SEX_OPTIONS, type ActivityLevel, type Sex } from "@calorie-critters/shared";
-import { Input, Label, Select } from "../../ui";
+import { Input, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui";
 import type { ProfileFormState } from "../form";
 import { formatEnumLabel } from "../form";
 
@@ -27,16 +27,19 @@ export function BasicsStep({ form, onChange }: BasicsStepProps) {
       <div className="field-grid">
         <Label htmlFor="sex">Gender</Label>
         <Select
-          id="sex"
           value={form.sex}
-          onChange={(event) => onChange({ sex: event.target.value as Sex | "" })}
+          onValueChange={(value) => onChange({ sex: value as Sex | "" })}
         >
-          <option value="">Select gender</option>
-          {SEX_OPTIONS.map((sex) => (
-            <option key={sex} value={sex}>
-              {formatEnumLabel(sex)}
-            </option>
-          ))}
+          <SelectTrigger id="sex">
+            <SelectValue placeholder="Select gender" />
+          </SelectTrigger>
+          <SelectContent>
+            {SEX_OPTIONS.map((sex) => (
+              <SelectItem key={sex} value={sex}>
+                {formatEnumLabel(sex)}
+              </SelectItem>
+            ))}
+          </SelectContent>
         </Select>
       </div>
 
@@ -83,16 +86,19 @@ export function BasicsStep({ form, onChange }: BasicsStepProps) {
       <div className="field-grid sm:col-span-2">
         <Label htmlFor="activityLevel">Activity Level</Label>
         <Select
-          id="activityLevel"
           value={form.activityLevel}
-          onChange={(event) => onChange({ activityLevel: event.target.value as ActivityLevel | "" })}
+          onValueChange={(value) => onChange({ activityLevel: value as ActivityLevel | "" })}
         >
-          <option value="">Select activity</option>
-          {ACTIVITY_LEVELS.map((activity) => (
-            <option key={activity} value={activity}>
-              {formatEnumLabel(activity)}
-            </option>
-          ))}
+          <SelectTrigger id="activityLevel">
+            <SelectValue placeholder="Select activity" />
+          </SelectTrigger>
+          <SelectContent>
+            {ACTIVITY_LEVELS.map((activity) => (
+              <SelectItem key={activity} value={activity}>
+                {formatEnumLabel(activity)}
+              </SelectItem>
+            ))}
+          </SelectContent>
         </Select>
       </div>
     </div>

@@ -1,9 +1,8 @@
 import * as React from "react";
-import { tv, type VariantProps } from "tailwind-variants";
+import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../../lib/cn";
 
-export const iconStyles = tv({
-  base: "shrink-0",
+export const iconStyles = cva("shrink-0", {
   variants: {
     size: {
       sm: "h-5 w-5",

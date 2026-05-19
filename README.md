@@ -11,6 +11,9 @@ A macro/calorie tracker with a cute critter companion. Hit your nutrition goals 
 ## Setup
 
 ```bash
+# Copy local env defaults
+cp .env.example .env
+
 # Start Postgres + Redis
 docker compose up -d
 
@@ -26,6 +29,8 @@ bun run dev
 
 The API runs on `http://localhost:3000` and the web app on `http://localhost:5173`.
 
+Local Postgres is published on `localhost:15433` and Redis on `localhost:6380` so this app can run alongside other cloned starters without sharing the same local services.
+
 ## Open Food Facts Integration
 
 The web app can import foods from Open Food Facts via the `/foods` page.
@@ -38,7 +43,7 @@ OPEN_FOOD_FACTS_USER_AGENT=CalorieCritters/0.1.0 (you@example.com)
 OPEN_FOOD_FACTS_TIMEOUT_MS=8000
 OPEN_FOOD_FACTS_CACHE_TTL_MS=86400000
 OPEN_FOOD_FACTS_CACHE_MAX_ENTRIES=500
-REDIS_URL=redis://localhost:6379
+REDIS_URL=redis://localhost:6380
 ```
 
 Why this matters:

@@ -1,7 +1,21 @@
 import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { PET_TEMPLATES, type PetTemplateId } from "@calorie-critters/shared";
-import { Badge, Button, Card, CardContent, CardHeader, CardTitle, Input, Label, Select } from "../components/ui";
+import {
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Input,
+  Label,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui";
 import { useSession } from "../lib/auth";
 import { PetAvatar, usePet } from "../pet";
 
@@ -93,15 +107,19 @@ function PetPage() {
             <div className="field-grid">
               <Label htmlFor="petTemplate">Pet Type</Label>
               <Select
-                id="petTemplate"
                 value={templateDraft}
-                onChange={(event) => setTemplateDraft(event.target.value as typeof templateDraft)}
+                onValueChange={(value) => setTemplateDraft(value as typeof templateDraft)}
               >
-                {PET_TEMPLATES.map((candidate) => (
-                  <option key={candidate.id} value={candidate.id}>
-                    {candidate.name} ({candidate.species})
-                  </option>
-                ))}
+                <SelectTrigger id="petTemplate">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {PET_TEMPLATES.map((candidate) => (
+                    <SelectItem key={candidate.id} value={candidate.id}>
+                      {candidate.name} ({candidate.species})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
             </div>
           </div>

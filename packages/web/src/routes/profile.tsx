@@ -27,6 +27,10 @@ import {
   Input,
   Label,
   Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
   useToast,
 } from "../components/ui";
 import { useSession } from "../lib/auth";
@@ -254,13 +258,17 @@ function ProfilePage() {
                     <div className="field-grid">
                       <Label htmlFor="unitSystem">Unit System</Label>
                       <Select
-                        id="unitSystem"
                         value={form.unitSystem}
-                        onChange={(event) => setForm((prev) => ({ ...prev, unitSystem: event.target.value as UnitSystem }))}
+                        onValueChange={(value) => setForm((prev) => ({ ...prev, unitSystem: value as UnitSystem }))}
                       >
-                        {UNIT_SYSTEMS.map((unit) => (
-                          <option key={unit} value={unit}>{formatEnumLabel(unit)}</option>
-                        ))}
+                        <SelectTrigger id="unitSystem">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {UNIT_SYSTEMS.map((unit) => (
+                            <SelectItem key={unit} value={unit}>{formatEnumLabel(unit)}</SelectItem>
+                          ))}
+                        </SelectContent>
                       </Select>
                     </div>
 
@@ -303,44 +311,53 @@ function ProfilePage() {
                     <div className="field-grid">
                       <Label htmlFor="sex">Sex</Label>
                       <Select
-                        id="sex"
                         value={form.sex}
-                        onChange={(event) => setForm((prev) => ({ ...prev, sex: event.target.value as Sex | "" }))}
+                        onValueChange={(value) => setForm((prev) => ({ ...prev, sex: value as Sex | "" }))}
                       >
-                        <option value="">Select sex</option>
-                        {SEX_OPTIONS.map((sex) => (
-                          <option key={sex} value={sex}>{formatEnumLabel(sex)}</option>
-                        ))}
+                        <SelectTrigger id="sex">
+                          <SelectValue placeholder="Select sex" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {SEX_OPTIONS.map((sex) => (
+                            <SelectItem key={sex} value={sex}>{formatEnumLabel(sex)}</SelectItem>
+                          ))}
+                        </SelectContent>
                       </Select>
                     </div>
 
                     <div className="field-grid">
                       <Label htmlFor="activityLevel">Activity Level</Label>
                       <Select
-                        id="activityLevel"
                         value={form.activityLevel}
-                        onChange={(event) =>
-                          setForm((prev) => ({ ...prev, activityLevel: event.target.value as ActivityLevel | "" }))
+                        onValueChange={(value) =>
+                          setForm((prev) => ({ ...prev, activityLevel: value as ActivityLevel | "" }))
                         }
                       >
-                        <option value="">Select activity</option>
-                        {ACTIVITY_LEVELS.map((activity) => (
-                          <option key={activity} value={activity}>{formatEnumLabel(activity)}</option>
-                        ))}
+                        <SelectTrigger id="activityLevel">
+                          <SelectValue placeholder="Select activity" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {ACTIVITY_LEVELS.map((activity) => (
+                            <SelectItem key={activity} value={activity}>{formatEnumLabel(activity)}</SelectItem>
+                          ))}
+                        </SelectContent>
                       </Select>
                     </div>
 
                     <div className="field-grid sm:col-span-2">
                       <Label htmlFor="goal">Goal</Label>
                       <Select
-                        id="goal"
                         value={form.goal}
-                        onChange={(event) => setForm((prev) => ({ ...prev, goal: event.target.value as Goal | "" }))}
+                        onValueChange={(value) => setForm((prev) => ({ ...prev, goal: value as Goal | "" }))}
                       >
-                        <option value="">Select goal</option>
-                        {GOALS.map((goal) => (
-                          <option key={goal} value={goal}>{formatEnumLabel(goal)}</option>
-                        ))}
+                        <SelectTrigger id="goal">
+                          <SelectValue placeholder="Select goal" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {GOALS.map((goal) => (
+                            <SelectItem key={goal} value={goal}>{formatEnumLabel(goal)}</SelectItem>
+                          ))}
+                        </SelectContent>
                       </Select>
                     </div>
 

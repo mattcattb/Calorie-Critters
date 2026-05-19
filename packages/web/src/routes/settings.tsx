@@ -1,7 +1,19 @@
 import { createFileRoute, Link, Navigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { UnitSystem, UpsertProfileInput, UserProfile } from "@calorie-critters/shared";
-import { Button, Card, CardContent, Input, Label, Select, useToast } from "../components/ui";
+import {
+  Button,
+  Card,
+  CardContent,
+  Input,
+  Label,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  useToast,
+} from "../components/ui";
 import { honoClient } from "../lib/hono.client";
 import { signOut, useSession } from "../lib/auth";
 
@@ -82,15 +94,19 @@ function SettingsPage() {
             <div className="field-grid">
               <Label htmlFor="unitSystem">Unit System</Label>
               <Select
-                id="unitSystem"
-                defaultValue={profile?.unitSystem ?? "metric"}
-                onChange={(event) => {
+                value={profile?.unitSystem ?? "metric"}
+                onValueChange={(value) => {
                   if (!profile) return;
-                  saveMutation.mutate({ ...toUpsertInput(profile), unitSystem: event.target.value as UnitSystem });
+                  saveMutation.mutate({ ...toUpsertInput(profile), unitSystem: value as UnitSystem });
                 }}
               >
-                <option value="metric">Metric</option>
-                <option value="imperial">Imperial</option>
+                <SelectTrigger id="unitSystem">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="metric">Metric</SelectItem>
+                  <SelectItem value="imperial">Imperial</SelectItem>
+                </SelectContent>
               </Select>
             </div>
           </div>

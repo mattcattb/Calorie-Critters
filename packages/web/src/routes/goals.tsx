@@ -16,6 +16,7 @@ import { AppIcon, Button, Card, CardContent, Input, useToast } from "../componen
 import { DailyGoalsOverview } from "../components/goals";
 import { honoClient } from "../lib/hono.client";
 import { useSession } from "../lib/auth";
+import { localDateKey } from "../lib/date";
 
 export const Route = createFileRoute("/goals")({
   component: GoalsPage,
@@ -71,7 +72,7 @@ function GoalsPage() {
     enabled: Boolean(session && !isPending),
   });
 
-  const today = new Date().toISOString().split("T")[0];
+  const today = localDateKey();
   const summaryQuery = useQuery({
     queryKey: ["summary", today],
     queryFn: () => honoClient.entries.summary<DailySummary>(today),

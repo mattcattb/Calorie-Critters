@@ -5,7 +5,7 @@ export const createEntrySchema = z.object({
   foodItemId: z.string().uuid(),
   servings: z.number().positive().default(1),
   mealType: z.enum(MEAL_TYPES),
-  loggedAt: z.string(), // YYYY-MM-DD
+  loggedAt: z.string().date(),
   notes: z.string().max(500).optional().nullable(),
 });
 

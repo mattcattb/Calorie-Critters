@@ -1,6 +1,11 @@
 import { zValidator } from "@hono/zod-validator";
 import { createRouter } from "../common/hono";
-import { createEntrySchema, updateEntrySchema } from "./entries.schema";
+import {
+  createEntrySchema,
+  entrySummaryQuerySchema,
+  listEntriesQuerySchema,
+  updateEntrySchema,
+} from "./entries.schema";
 import {
   createEntry,
   deleteEntry,
@@ -11,16 +16,14 @@ import {
 import { NotFoundException } from "../common/errors";
 
 export const entriesController = createRouter()
-  .get("/", async (c) => {
-    const date = c.req.query("date");
-    const from = c.req.query("from");
-    const to = c.req.query("to");
+  .get("/", zValidator("query", listEntriesQuerySchema), async (c) => {
+    const { date, from, to } = c.req.valid("query");
     const entries = await listEntries(c.get("userId"), { date, from, to });
     return c.json(entries);
   })
-  .get("/summary", async (c) => {
+  .get("/summary", zValidator("query", entrySummaryQuerySchema), async (c) => {
     const date =
-      c.req.query("date") ?? new Date().toISOString().split("T")[0];
+      c.req.valid("query").date ?? new Date().toISOString().split("T")[0];
     const summary = await getDailySummary(c.get("userId"), date);
     return c.json(summary);
   })

@@ -1,7 +1,21 @@
 import { and, between, desc, eq, sql } from "drizzle-orm";
 import { db } from "../db";
 import { foodEntry, foodItem } from "../db/schema";
+import { NotFoundException } from "../common/errors";
 import type { CreateEntryInput, UpdateEntryInput } from "./entries.schema";
+
+async function ensureOwnedFoodItem(foodItemId: string, userId: string) {
+  const [ownedFood] = await db
+    .select({ id: foodItem.id })
+    .from(foodItem)
+    .where(
+      and(eq(foodItem.id, foodItemId), eq(foodItem.createdBy, userId)),
+    );
+
+  if (!ownedFood) {
+    throw new NotFoundException("Food item not found");
+  }
+}
 
 export const listEntries = async (
   userId: string,
@@ -30,6 +44,8 @@ export const createEntry = async (
   userId: string,
   data: CreateEntryInput,
 ) => {
+  await ensureOwnedFoodItem(data.foodItemId, userId);
+
   const [created] = await db
     .insert(foodEntry)
     .values({ userId, ...data })
@@ -42,6 +58,10 @@ export const updateEntry = async (
   userId: string,
   data: UpdateEntryInput,
 ) => {
+  if (data.foodItemId) {
+    await ensureOwnedFoodItem(data.foodItemId, userId);
+  }
+
   const [updated] = await db
     .update(foodEntry)
     .set({ ...data, updatedAt: new Date() })

@@ -72,8 +72,10 @@ function isActivePath(currentPath: string, targetPath: NavItem["to"]): boolean {
   return currentPath.startsWith(targetPath);
 }
 
-function tabClass(): string {
-  return "inline-flex h-11 w-11 shrink-0 items-center justify-center";
+function tabClass(active: boolean): string {
+  return `inline-flex min-w-12 shrink-0 flex-col items-center justify-center gap-0.5 rounded-xl px-1.5 py-1 transition-colors ${
+    active ? "bg-indigo-50 text-indigo-700" : "text-slate-400 hover:bg-slate-50 hover:text-slate-600"
+  }`;
 }
 
 function RootLayout() {
@@ -138,7 +140,10 @@ function RootLayoutContent() {
                 <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-lg text-primary-foreground">
                   ☺
                 </span>
-                <span className="font-display text-xl font-black tracking-tight text-primary">CALORIE CRITTERS</span>
+                <span className="font-display text-lg font-black tracking-tight text-primary sm:text-xl">
+                  <span className="sm:hidden">CRITTERS</span>
+                  <span className="hidden sm:inline">CALORIE CRITTERS</span>
+                </span>
               </Link>
 
               {isPending ? null : session ? (
@@ -163,12 +168,13 @@ function RootLayoutContent() {
 
       {session && !isOnboardingRoute ? (
         <div className="fixed inset-x-0 bottom-5 z-50 px-3 sm:px-5">
-          <nav className="mx-auto flex w-full max-w-[560px] items-center justify-between rounded-[2.25rem] border border-indigo-100 bg-white/94 px-5 py-1.5 shadow-2xl backdrop-blur-xl">
+          <nav aria-label="Primary navigation" className="mx-auto flex w-full max-w-[600px] items-center justify-between rounded-[2.25rem] border border-indigo-100 bg-white/94 px-3 py-1.5 shadow-2xl backdrop-blur-xl sm:px-5">
             {NAV_ITEMS.slice(0, 2).map((item) => {
               const active = isActivePath(location.pathname, item.to);
               return (
-                <Link key={item.to} to={item.to} className={tabClass()} aria-label={item.label}>
+                <Link key={item.to} to={item.to} className={tabClass(active)} aria-current={active ? "page" : undefined}>
                   {item.icon(active)}
+                  <span className="text-[0.58rem] font-black uppercase tracking-[0.08em]">{item.label}</span>
                 </Link>
               );
             })}
@@ -177,19 +183,21 @@ function RootLayoutContent() {
               type="button"
               aria-label="Log Food"
               onClick={openLog}
-              className="inline-flex h-16 w-16 shrink-0 items-center justify-center rounded-[1.35rem] border-4 border-white bg-indigo-600 text-white shadow-[0_14px_26px_hsl(245_78%_60%/0.45)]"
+              className="inline-flex h-16 w-16 shrink-0 flex-col items-center justify-center rounded-[1.35rem] border-4 border-white bg-indigo-600 text-white shadow-[0_14px_26px_hsl(245_78%_60%/0.45)] transition-transform hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-indigo-400"
             >
-              <AppIcon size="xl" className="h-9 w-9">
+              <AppIcon size="xl" className="h-7 w-7">
                 <path d="M12 5.5V18.5" stroke="white" strokeWidth="2.8" strokeLinecap="round" />
                 <path d="M5.5 12H18.5" stroke="white" strokeWidth="2.8" strokeLinecap="round" />
               </AppIcon>
+              <span className="text-[0.56rem] font-black uppercase tracking-[0.08em]">Log</span>
             </button>
 
             {NAV_ITEMS.slice(2).map((item) => {
               const active = isActivePath(location.pathname, item.to);
               return (
-                <Link key={item.to} to={item.to} className={tabClass()} aria-label={item.label}>
+                <Link key={item.to} to={item.to} className={tabClass(active)} aria-current={active ? "page" : undefined}>
                   {item.icon(active)}
+                  <span className="text-[0.58rem] font-black uppercase tracking-[0.08em]">{item.label}</span>
                 </Link>
               );
             })}

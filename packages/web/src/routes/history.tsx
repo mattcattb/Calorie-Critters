@@ -7,18 +7,15 @@ import { HistoryStatChip, MealSection } from "../components/history";
 import { PageHeader } from "../components/layout/page-header";
 import { honoClient } from "../lib/hono.client";
 import { useSession } from "../lib/auth";
+import { localDateKey } from "../lib/date";
 
 export const Route = createFileRoute("/history")({
   component: HistoryPage,
 });
 
-function isoToday() {
-  return new Date().toISOString().split("T")[0];
-}
-
 function HistoryPage() {
   const { data: session, isPending } = useSession();
-  const [selectedDate, setSelectedDate] = useState(isoToday);
+  const [selectedDate, setSelectedDate] = useState(localDateKey);
 
   const canFetch = Boolean(session && !isPending);
 

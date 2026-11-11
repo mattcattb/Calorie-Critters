@@ -56,6 +56,10 @@ export const honoClient = {
       parseResponse<T>(await client.api.entries.summary.$get({query: {date}})),
     create: async <T>(json: CreateEntryInput) =>
       parseResponse<T>(await client.api.entries.$post({json})),
+    remove: async <T>(id: string) =>
+      parseResponse<T>(
+        await client.api.entries[":id"].$delete({param: {id}}),
+      ),
   },
   foods: {
     list: async <T>(search?: string) =>

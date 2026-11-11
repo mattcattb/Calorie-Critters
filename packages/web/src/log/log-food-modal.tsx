@@ -18,6 +18,7 @@ import {
 } from "../components/ui";
 import { honoClient } from "../lib/hono.client";
 import { useSession } from "../lib/auth";
+import { localDateKey, relativeDateKey } from "../lib/date";
 import { useLogFoodModal } from "./log-food-modal-context";
 
 type OpenFoodFactsFood = {
@@ -42,16 +43,6 @@ type OpenFoodFactsSearchResult = {
 type Recommendation =
   | { source: "library"; food: FoodItem }
   | { source: "open_food_facts"; food: OpenFoodFactsFood };
-
-function isoToday(): string {
-  return new Date().toISOString().split("T")[0];
-}
-
-function isoYesterday(): string {
-  const date = new Date();
-  date.setDate(date.getDate() - 1);
-  return date.toISOString().split("T")[0];
-}
 
 function defaultMealType(): MealType {
   const hour = new Date().getHours();
@@ -78,7 +69,8 @@ export function LogFoodModal() {
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
   const canFetch = Boolean(session && !isPending && isOpen);
-  const today = isoToday();
+  const today = localDateKey();
+  const yesterday = relativeDateKey(-1);
 
   useEffect(() => {
     if (!isOpen) {
@@ -105,8 +97,8 @@ export function LogFoodModal() {
   });
 
   const yesterdayEntriesQuery = useQuery({
-    queryKey: ["entries", isoYesterday()],
-    queryFn: () => honoClient.entries.list<EntryWithFood[]>({ date: isoYesterday() }),
+    queryKey: ["entries", yesterday],
+    queryFn: () => honoClient.entries.list<EntryWithFood[]>({ date: yesterday }),
     enabled: canFetch,
   });
 
